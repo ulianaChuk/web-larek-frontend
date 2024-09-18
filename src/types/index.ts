@@ -12,6 +12,10 @@ interface IProductList {
 	items: Array<IProduct>;
 }
 
+interface ICartItem {
+    productId: string;  
+}
+
 interface IOrder {
 	id: string;
 	items: Array<string>;
@@ -23,10 +27,17 @@ interface IOrder {
 }
 
 interface IOrderForm {
-	payment: string;
-	address: string;
+	payment?: string;
+	address?: string;
 	email: string;
 	phone: string;
+}
+interface IOrderData {
+    address: string;
+    paymentMethod: string;
+    phone: string;
+    email: string;
+    items: ICartItem[];
 }
 
 interface IOrderResult {
