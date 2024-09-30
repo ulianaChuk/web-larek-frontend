@@ -5,15 +5,10 @@ import { IBasketController } from './basket.controller'; // Importing BasketCont
 
 export interface IProductController {
 	/**
-	 * Загружает список продуктов с сервера и рендерит их на странице.
-	 */
-	fetchProducts(): Promise<void>;
-
-	/**
 	 * Рендерит список продуктов на странице.
 	 * @param products - Массив объектов продуктов, которые нужно отобразить.
 	 */
-	renderProducts(products: IProduct[]): void;
+	renderProducts(products: Promise<IProduct[]>): Promise<void>;
 
 	/**
 	 * Привязывает события к карточкам продуктов.
@@ -29,35 +24,22 @@ export interface IProductController {
 }
 
 export class ProductController implements IProductController {
-	
-
 	constructor(
-		private productService: IProductService, 
+		private productService: IProductService,
 		private productView: IProductView,
-		private basketController: IBasketController 
+		private basketController: IBasketController
 	) {
-		this.fetchProducts()
+		this.renderProducts(this.productService.products);
 	}
 
-	// Асинхронный метод для загрузки продуктов
-	fetchProducts = async (): Promise<void> => {
+	// Рендеринг продуктов на странице
+	renderProducts = async (products: Promise<IProduct[]>): Promise<void> => {
 		try {
-			const products: IProduct[] = await this.productService.fetchProducts();
-			this.renderProducts(products);
+			this.productView.renderAllCards(await products);
+			this.bindProductEvents(await products);
 		} catch (error) {
 			console.error('Ошибка при загрузке товаров:', error);
 		}
-	};
-
-	// Рендеринг продуктов на странице
-	renderProducts = (products: IProduct[]): void => {
-		if (!products.length) {
-			console.warn('Нет продуктов для отображения.');
-			return;
-		}
-
-		this.productView.renderAllCards(products);
-		this.bindProductEvents(products);
 	};
 
 	// Привязка событий к карточкам продуктов
