@@ -32,7 +32,10 @@ export interface IBasketController {
 }
 
 export class BasketController implements IBasketController {
-	constructor(private basketService: IBasketService, private basketView: IBasketView) {
+	constructor(
+		private basketService: IBasketService,
+		private basketView: IBasketView
+	) {
 		// Привязываем событие клика на кнопку корзины в шапке
 		const basketButton = document.querySelector('.header__basket');
 		if (basketButton) {
@@ -50,7 +53,8 @@ export class BasketController implements IBasketController {
 		if (modalElement) {
 			const basketItems = this.basketService.getItems();
 			const totalPrice = this.basketService.getTotalPrice(); // Рассчитываем общую стоимость товаров
-			modalElement.querySelector('.modal__content')!.innerHTML = this.basketView.renderBasket(basketItems, totalPrice); // Передаем два аргумента: basketItems и totalPrice
+			this.basketView.renderBasket(basketItems, totalPrice); // Передаем два аргумента: basketItems и totalPrice
+			// modalElement.querySelector('.modal__content')!.innerHTML = this.basketView.renderBasket(basketItems, totalPrice); // Передаем два аргумента: basketItems и totalPrice
 			modalElement.classList.add('modal_active'); // Активируем модальное окно корзины
 
 			// Привязываем событие для закрытия корзины
@@ -79,7 +83,9 @@ export class BasketController implements IBasketController {
 		this.updateBasketCounter(); // Обновляем счетчик товаров в корзине
 
 		// Находим элемент корзины и удаляем его из DOM
-		const basketItemElement = document.querySelector(`.basket__item[data-id="${productId}"]`);
+		const basketItemElement = document.querySelector(
+			`.basket__item[data-id="${productId}"]`
+		);
 		if (basketItemElement) {
 			basketItemElement.remove(); // Удаляем элемент <li> из DOM
 		}
@@ -109,7 +115,7 @@ export class BasketController implements IBasketController {
 		const modalElement = document.getElementById('modal-container');
 
 		if (basketElement) {
-			basketElement.innerHTML = this.basketView.renderBasketItems(basketItems); // Обновляем товары
+			this.basketView.renderBasketItems(basketItems); // Обновляем товары
 			this.basketView.renderTotalPrice(totalPrice); // Обновляем общую сумму товаров
 		}
 
@@ -124,7 +130,9 @@ export class BasketController implements IBasketController {
 	updateBasketCounter = (): void => {
 		const basketCounter = document.querySelector('.header__basket-counter');
 		if (basketCounter) {
-			const totalItems = this.basketService.getItems().reduce((sum, item) => sum + item.quantity, 0);
+			const totalItems = this.basketService
+				.getItems()
+				.reduce((sum, item) => sum + item.quantity, 0);
 			basketCounter.textContent = totalItems.toString();
 		}
 	};
@@ -132,7 +140,7 @@ export class BasketController implements IBasketController {
 	// Метод для привязки событий удаления для всех элементов корзины
 	bindDeleteEvents = (): void => {
 		const deleteButtons = document.querySelectorAll('.basket__item-delete');
-		deleteButtons.forEach(button => {
+		deleteButtons.forEach((button) => {
 			button.addEventListener('click', (event) => {
 				const productId = (event.target as HTMLElement).dataset.id;
 				if (productId) {

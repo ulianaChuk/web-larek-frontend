@@ -21,25 +21,25 @@ export interface IProductView {
 	 */
 	renderModal(product: IProduct): string;
 
-	/**
-	 * Рендеринг товаров в корзине.
-	 * @param items - Массив объектов товаров с их количеством.
-	 * @returns HTML списка товаров в корзине.
-	 */
-	renderBasketItems(items: { product: IProduct; quantity: number }[]): string;
+	// /**
+	//  * Рендеринг товаров в корзине.
+	//  * @param items - Массив объектов товаров с их количеством.
+	//  * @returns HTML списка товаров в корзине.
+	//  */
+	// renderBasketItems(items: { product: IProduct; quantity: number }[]): string;
 
-	/**
-	 * Рендеринг пустой корзины.
-	 * @returns HTML содержимого корзины.
-	 */
-	renderBasket(): string;
+	// /**
+	//  * Рендеринг пустой корзины.
+	//  * @returns HTML содержимого корзины.
+	//  */
+	// renderBasket(): string;
 
-	/**
-	 * Рендеринг сообщения об успешном оформлении заказа.
-	 * @param totalPrice - Общая стоимость корзины.
-	 * @returns HTML сообщения об успешном оформлении заказа.
-	 */
-	renderOrderSuccess(totalPrice: number): string;
+	// /**
+	//  * Рендеринг сообщения об успешном оформлении заказа.
+	//  * @param totalPrice - Общая стоимость корзины.
+	//  * @returns HTML сообщения об успешном оформлении заказа.
+	//  */
+	// renderOrderSuccess(totalPrice: number): string;
 }
 
 export class ProductView implements IProductView {
@@ -107,13 +107,14 @@ export class ProductView implements IProductView {
 
 		modalTitle.textContent = product.title;
 		modalCategory.textContent = product.category;
-		modalPrice.textContent =
-			product.price !== null ? `${product.price} синапсов` : 'Бесценно';
+		modalPrice.textContent =`${product.price} синапсов`;
 		modalImage.src = `${CDN_URL}${product.image}`;
 		modalText.textContent = product.description || 'Нет описания';
 
 		const modalContainer = fragment.querySelector('.card') as HTMLElement;
 		return modalContainer.outerHTML;
+
+		
 	};
 
 	// Привязка событий к карточкам продуктов
@@ -201,33 +202,33 @@ export class ProductView implements IProductView {
 			.join('');
 	};
 
-	// Стрелочная функция для рендеринга корзины
-	renderBasket = (): string => {
-		const template = document.getElementById('basket') as HTMLTemplateElement;
-		if (!template) {
-			console.error('Шаблон basket не найден');
-			return '';
-		}
-		return template.innerHTML;
-	};
+	// // Стрелочная функция для рендеринга корзины
+	// renderBasket = (): string => {
+	// 	const template = document.getElementById('basket') as HTMLTemplateElement;
+	// 	if (!template) {
+	// 		console.error('Шаблон basket не найден');
+	// 		return '';
+	// 	}
+	// 	return template.innerHTML;
+	// };
 
-	// Стрелочная функция для рендеринга сообщения об успешном оформлении заказа
-	renderOrderSuccess = (totalPrice: number): string => {
-		const template = document.getElementById('success') as HTMLTemplateElement;
-		if (!template) {
-			console.error('Шаблон success не найден');
-			return '';
-		}
+	// // Стрелочная функция для рендеринга сообщения об успешном оформлении заказа
+	// renderOrderSuccess = (totalPrice: number): string => {
+	// 	const template = document.getElementById('success') as HTMLTemplateElement;
+	// 	if (!template) {
+	// 		console.error('Шаблон success не найден');
+	// 		return '';
+	// 	}
 
-		const fragment = template.content.cloneNode(true) as DocumentFragment;
-		const description = fragment.querySelector(
-			'.order-success__description'
-		) as HTMLElement;
-		description.textContent = `Списано ${totalPrice} синапсов`;
+	// 	const fragment = template.content.cloneNode(true) as DocumentFragment;
+	// 	const description = fragment.querySelector(
+	// 		'.order-success__description'
+	// 	) as HTMLElement;
+	// 	description.textContent = `Списано ${totalPrice} синапсов`;
 
-		const successContainer = fragment.querySelector(
-			'.order-success'
-		) as HTMLElement;
-		return successContainer.outerHTML;
-	};
+	// 	const successContainer = fragment.querySelector(
+	// 		'.order-success'
+	// 	) as HTMLElement;
+	// 	return successContainer.outerHTML;
+	// };
 }

@@ -15,19 +15,14 @@ export interface IBasketView {
 	 */
 	renderTotalPrice(totalPrice: number): string;
 
-	/**
-	 * Рендеринг пустой корзины.
-	 * @returns HTML для пустой корзины.
-	 */
-	renderEmptyBasket(): string;
-
+	
 	/**
 	 * Рендеринг корзины, включая товары и общую стоимость.
 	 * @param items - Массив объектов товаров с их количеством.
 	 * @param totalPrice - Общая сумма товаров в корзине.
 	 * @returns HTML корзины.
 	 */
-	renderBasket(items: { product: IProduct, quantity: number }[], totalPrice: number): string;
+	renderBasket(items: { product: IProduct, quantity: number }[], totalPrice: number): void;
 }
 export class BasketView implements IBasketView {
 	// Рендеринг товаров в корзине
@@ -71,21 +66,25 @@ export class BasketView implements IBasketView {
 		return priceElement.outerHTML;
 	};
 
-	// Рендеринг пустой корзины
-	renderEmptyBasket = (): string => {
-		const template = document.getElementById('basket') as HTMLTemplateElement;
-		if (!template) {
-			console.error('Шаблон basket не найден');
-			return '';
-		}
-		return template.innerHTML;
-	};
 
 	// Рендеринг полной корзины с товарами и общей стоимостью
-	renderBasket = (items: { product: IProduct, quantity: number }[], totalPrice: number): string => {
-		const itemsHTML = this.renderBasketItems(items);
-		const totalPriceHTML = this.renderTotalPrice(totalPrice);
+	renderBasket = (items: { product: IProduct, quantity: number }[], totalPrice: number): void => {
+		const template = document.getElementById('basket') as HTMLTemplateElement;
+		const fragment = template.content.cloneNode(true) as HTMLElement;
+		const basketItems = fragment.querySelector('.basket__list') as HTMLElement;
+		const basketTotalPrice = fragment.querySelector('.basket__price') as HTMLElement;
+		const modalContent = document.querySelector('.modal__content')
 
-		return `${itemsHTML}${totalPriceHTML}`;
+		basketItems.innerHTML = this.renderBasketItems(items) ;
+		basketTotalPrice.textContent = `${totalPrice} синапсов`;
+	
+		modalContent.innerHTML = ``;
+		modalContent.appendChild(fragment);
+
+		// if (modalElement) {
+			
+		// 	modalElement.classList.add('modal_active');
+		// }
+
 	};
 }
