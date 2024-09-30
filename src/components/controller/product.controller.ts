@@ -1,6 +1,6 @@
 import { IProductView } from '../view/product.view';
 import { IProduct } from '../model/product.model';
-import { ProductService } from '../service/product.service';
+import { IProductService, ProductService } from '../service/product.service';
 import { IBasketController } from './basket.controller'; // Importing BasketController
 
 export interface IProductController {
@@ -29,13 +29,14 @@ export interface IProductController {
 }
 
 export class ProductController implements IProductController {
-	private productService: ProductService;
+	
 
 	constructor(
+		private productService: IProductService, 
 		private productView: IProductView,
-		private basketController: IBasketController // Passing BasketController as a dependency
+		private basketController: IBasketController 
 	) {
-		this.productService = new ProductService();
+		this.fetchProducts()
 	}
 
 	// Асинхронный метод для загрузки продуктов
@@ -77,7 +78,7 @@ export class ProductController implements IProductController {
 		const modalElement = document.getElementById('modal-container');
 		if (modalElement) {
 			// Рендерим содержимое модального окна
-			modalElement.querySelector('.modal__content')!.innerHTML =
+			modalElement.querySelector('.modal__content').innerHTML =
 				this.productView.renderModal(product);
 			modalElement.classList.add('modal_active'); // Активируем модальное окно
 

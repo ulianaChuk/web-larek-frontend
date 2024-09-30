@@ -6,7 +6,8 @@ export interface IProduct {
 	category: string;
 	price: number | null;  // Цена может быть null, если её нет
 }
-
+ // Класс Product, реализующий интерфейс IProduct
+ 
 export class Product implements IProduct {
 	constructor(
 		public id: string,
@@ -18,7 +19,7 @@ export class Product implements IProduct {
 	) {}
 
 	// Статический метод для создания продукта из данных API
-	static fromApiData(data: any): Product {
+	static fromApiData(data:IProduct): Product {
 		return new Product(
 			data.id,
 			data.title,
