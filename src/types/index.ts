@@ -1,4 +1,5 @@
-interface IProduct {
+
+ export interface IProduct {
 	id: string;
 	name: string;
 	price: number | null;
@@ -7,42 +8,45 @@ interface IProduct {
 	image: string;
 }
 
-interface IProductList {
+export interface IProductList {
 	total: number;
 	items: Array<IProduct>;
 }
 
-interface ICartItem {
-    productId: string;  
-}
-
-interface IOrder {
+export interface IOrder {
 	id: string;
 	items: Array<string>;
 	totalAmount: number;
 	payment: string;
-	deliveryAddress: string;
+	address: string;
 	email: string;
 	phone: string;
 }
 
-interface IOrderForm {
+export interface IOrderForm {
 	payment?: string;
 	address?: string;
 	email: string;
 	phone: string;
 }
-interface IOrderData {
+
+export interface IOrderData {
     address: string;
     paymentMethod: string;
     phone: string;
     email: string;
-    items: ICartItem[];
+    items: Array<string>;
 }
 
-interface IOrderResult {
+export interface IOrderResult {
 	id: string;
 	total: number;
 }
 
-type FormErrors = Partial<Record<keyof IOrderForm, string>>;
+export interface ISuccess{
+orderId:string;
+total:number;
+}
+
+
+export type FormErrors = Partial<Record<keyof IOrderForm, string>>;

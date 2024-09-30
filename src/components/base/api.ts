@@ -12,9 +12,10 @@ export class Api {
     constructor(baseUrl: string, options: RequestInit = {}) {
         this.baseUrl = baseUrl;
         this.options = {
+            ...options,
             headers: {
                 'Content-Type': 'application/json',
-                ...(options.headers as object ?? {})
+                ...(options.headers ?? {})
             }
         };
     }
