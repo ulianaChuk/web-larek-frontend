@@ -10,6 +10,10 @@ export interface IProductView {
 	renderProductCard(product: IProduct): string;
 
 	renderAllCards(products: IProduct[]): void;
+
+	bindProductEvents(products: IProduct[], addToBasket: CallableFunction): void;
+	
+	showModal(product: IProduct,addToBasket: CallableFunction): void;
 	/**
 	 * Рендеринг модального окна с информацией о товаре.
 	 * @param product - Объект товара для отображения в модальном окне.
@@ -110,6 +114,46 @@ export class ProductView implements IProductView {
 
 		const modalContainer = fragment.querySelector('.card') as HTMLElement;
 		return modalContainer.outerHTML;
+	};
+
+	// Привязка событий к карточкам продуктов
+	bindProductEvents = (products: IProduct[], addToBasket: CallableFunction): void => {
+		document.querySelectorAll('.gallery__item').forEach((card) => {
+			card.addEventListener('click', () => {
+				const productId = (card as HTMLElement).getAttribute('data-id');
+				const product = products.find((p) => p.id === productId);
+				if (product) {
+					this.showModal(product,addToBasket);
+				}
+			});
+		});
+	};
+
+	// Открытие модального окна для продукта
+	showModal = (product: IProduct, addToBasket: CallableFunction): void => {
+		const modalElement = document.getElementById('modal-container');
+		if (modalElement) {
+			// Рендерим содержимое модального окна
+			modalElement.querySelector('.modal__content').innerHTML =
+				this.renderModal(product);
+			modalElement.classList.add('modal_active'); // Активируем модальное окно
+
+			// Привязываем событие для добавления продукта в корзину через BasketController
+			const addToBasketButton = modalElement.querySelector('.card__button');
+			if (addToBasketButton) {
+				addToBasketButton.addEventListener('click', () => {
+					addToBasket(product); // Вызываем метод из BasketController
+					modalElement.classList.remove('modal_active'); // Закрываем модальное окно после добавления
+				});
+			}
+
+			// Привязываем событие для закрытия модального окна
+			modalElement
+				.querySelector('.modal__close')!
+				.addEventListener('click', () => {
+					modalElement.classList.remove('modal_active'); // Деактивируем модальное окно
+				});
+		}
 	};
 
 	// Стрелочная функция для рендеринга товаров в корзине
