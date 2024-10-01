@@ -24,6 +24,7 @@ export class ProductController implements IProductController {
 		private basketController: IBasketController
 	) {
 		this.renderProducts(this.productService.products);
+		
 	}
 
 	// Рендеринг продуктов на странице

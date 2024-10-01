@@ -6,7 +6,7 @@ export interface IBasketView {
 	 * @param items - Массив объектов товаров с их количеством.
 	 * @returns HTML списка товаров в корзине.
 	 */
-	renderBasketItems(items: { product: IProduct, quantity: number }[]): string;
+	renderBasketItems(items: { product: IProduct; quantity: number }[]): string;
 
 	/**
 	 * Рендеринг общей стоимости товаров в корзине.
@@ -15,44 +15,65 @@ export interface IBasketView {
 	 */
 	renderTotalPrice(totalPrice: number): string;
 
-	
 	/**
 	 * Рендеринг корзины, включая товары и общую стоимость.
 	 * @param items - Массив объектов товаров с их количеством.
 	 * @param totalPrice - Общая сумма товаров в корзине.
 	 * @returns HTML корзины.
 	 */
-	renderBasket(items: { product: IProduct, quantity: number }[], totalPrice: number): void;
+	renderBasket(
+		items: { product: IProduct; quantity: number }[],
+		totalPrice: number
+	): void;
+	handleBasketButton(getItems: CallableFunction, getTotalPrice: CallableFunction): void;
+	openBasket(getItems: CallableFunction, getTotalPrice: CallableFunction): void;
 }
 export class BasketView implements IBasketView {
 	// Рендеринг товаров в корзине
-	renderBasketItems = (items: { product: IProduct, quantity: number }[]): string => {
-		return items.map((item, index) => {
-			const template = document.getElementById('card-basket') as HTMLTemplateElement;
-			if (!template) {
-				console.error('Шаблон card-basket не найден');
-				return '';
-			}
+	renderBasketItems = (
+		items: { product: IProduct; quantity: number }[]
+	): string => {
+		return items
+			.map((item, index) => {
+				const template = document.getElementById(
+					'card-basket'
+				) as HTMLTemplateElement;
+				if (!template) {
+					console.error('Шаблон card-basket не найден');
+					return '';
+				}
 
-			const fragment = template.content.cloneNode(true) as DocumentFragment;
+				const fragment = template.content.cloneNode(true) as DocumentFragment;
 
-			const basketTitle = fragment.querySelector('.card__title') as HTMLElement;
-			const basketPrice = fragment.querySelector('.card__price') as HTMLElement;
-			const basketIndex = fragment.querySelector('.basket__item-index') as HTMLElement;
-			const deleteButton = fragment.querySelector('.basket__item-delete') as HTMLElement;
+				const basketTitle = fragment.querySelector(
+					'.card__title'
+				) as HTMLElement;
+				const basketPrice = fragment.querySelector(
+					'.card__price'
+				) as HTMLElement;
+				const basketIndex = fragment.querySelector(
+					'.basket__item-index'
+				) as HTMLElement;
+				const deleteButton = fragment.querySelector(
+					'.basket__item-delete'
+				) as HTMLElement;
 
-			// Устанавливаем данные товара и количество
-			basketTitle.textContent = item.product.title;
-			basketPrice.textContent = item.product.price !== null
-				? `${item.product.price} синапсов x ${item.quantity}`
-				: 'Бесценно';
-			basketIndex.textContent = (index + 1).toString();
-			deleteButton.dataset.id = item.product.id;
+				// Устанавливаем данные товара и количество
+				basketTitle.textContent = item.product.title;
+				basketPrice.textContent =
+					item.product.price !== null
+						? `${item.product.price} синапсов x ${item.quantity}`
+						: 'Бесценно';
+				basketIndex.textContent = (index + 1).toString();
+				deleteButton.dataset.id = item.product.id;
 
-			// Возвращаем HTML конкретного элемента
-			const basketItem = fragment.querySelector('.basket__item') as HTMLElement;
-			return basketItem.outerHTML;
-		}).join('');
+				// Возвращаем HTML конкретного элемента
+				const basketItem = fragment.querySelector(
+					'.basket__item'
+				) as HTMLElement;
+				return basketItem.outerHTML;
+			})
+			.join('');
 	};
 
 	// Рендеринг общей стоимости товаров в корзине
@@ -66,25 +87,50 @@ export class BasketView implements IBasketView {
 		return priceElement.outerHTML;
 	};
 
-
 	// Рендеринг полной корзины с товарами и общей стоимостью
-	renderBasket = (items: { product: IProduct, quantity: number }[], totalPrice: number): void => {
+	renderBasket = (
+		items: { product: IProduct; quantity: number }[],
+		totalPrice: number
+	): void => {
 		const template = document.getElementById('basket') as HTMLTemplateElement;
 		const fragment = template.content.cloneNode(true) as HTMLElement;
 		const basketItems = fragment.querySelector('.basket__list') as HTMLElement;
-		const basketTotalPrice = fragment.querySelector('.basket__price') as HTMLElement;
-		const modalContent = document.querySelector('.modal__content')
+		const basketTotalPrice = fragment.querySelector(
+			'.basket__price'
+		) as HTMLElement;
+		const modalContent = document.querySelector('.modal__content');
 
-		basketItems.innerHTML = this.renderBasketItems(items) ;
+		basketItems.innerHTML = this.renderBasketItems(items);
 		basketTotalPrice.textContent = `${totalPrice} синапсов`;
-	
+
 		modalContent.innerHTML = ``;
 		modalContent.appendChild(fragment);
 
 		// if (modalElement) {
-			
+
 		// 	modalElement.classList.add('modal_active');
 		// }
-
 	};
+
+	openBasket = ( getItems: CallableFunction, getTotalPrice: CallableFunction): void => {
+		const modalElement = document.getElementById('modal-container');
+		if (modalElement) {
+			this.renderBasket(getItems(), getTotalPrice());
+			modalElement.classList.add('modal_active');
+			// Привязываем событие для закрытия модального окна
+
+			modalElement
+				.querySelector('.modal__close')!
+				.addEventListener('click', () => {
+					modalElement.classList.remove('modal_active'); // Деактивируем модальное окно
+				});
+		}
+	}
+
+	handleBasketButton=(getItems: CallableFunction, getTotalPrice: CallableFunction)=>{
+		const basketButton = document.querySelector('.header__basket');
+		if (basketButton) {
+			basketButton.addEventListener('click', ()=>{this.openBasket(getItems, getTotalPrice)}); // Открытие корзины по клику
+		}
+	}
 }

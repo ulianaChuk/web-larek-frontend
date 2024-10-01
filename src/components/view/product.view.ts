@@ -12,8 +12,8 @@ export interface IProductView {
 	renderAllCards(products: IProduct[]): void;
 
 	bindProductEvents(products: IProduct[], addToBasket: CallableFunction): void;
-	
-	showModal(product: IProduct,addToBasket: CallableFunction): void;
+
+	showModal(product: IProduct, addToBasket: CallableFunction): void;
 	/**
 	 * Рендеринг модального окна с информацией о товаре.
 	 * @param product - Объект товара для отображения в модальном окне.
@@ -107,24 +107,25 @@ export class ProductView implements IProductView {
 
 		modalTitle.textContent = product.title;
 		modalCategory.textContent = product.category;
-		modalPrice.textContent =`${product.price} синапсов`;
+		modalPrice.textContent = `${product.price} синапсов`;
 		modalImage.src = `${CDN_URL}${product.image}`;
 		modalText.textContent = product.description || 'Нет описания';
 
 		const modalContainer = fragment.querySelector('.card') as HTMLElement;
 		return modalContainer.outerHTML;
-
-		
 	};
 
 	// Привязка событий к карточкам продуктов
-	bindProductEvents = (products: IProduct[], addToBasket: CallableFunction): void => {
+	bindProductEvents = (
+		products: IProduct[],
+		addToBasket: CallableFunction
+	): void => {
 		document.querySelectorAll('.gallery__item').forEach((card) => {
 			card.addEventListener('click', () => {
 				const productId = (card as HTMLElement).getAttribute('data-id');
 				const product = products.find((p) => p.id === productId);
 				if (product) {
-					this.showModal(product,addToBasket);
+					this.showModal(product, addToBasket);
 				}
 			});
 		});

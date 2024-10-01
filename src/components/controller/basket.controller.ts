@@ -36,11 +36,12 @@ export class BasketController implements IBasketController {
 		private basketService: IBasketService,
 		private basketView: IBasketView
 	) {
+		this.basketView.handleBasketButton(this.basketService.getItems, this.basketService.getTotalPrice); // Привязываем событие клика на кнопку корзины в шапке
 		// Привязываем событие клика на кнопку корзины в шапке
-		const basketButton = document.querySelector('.header__basket');
-		if (basketButton) {
-			basketButton.addEventListener('click', this.openBasket); // Открытие корзины по клику
-		}
+		// const basketButton = document.querySelector('.header__basket');
+		// if (basketButton) {
+		// 	basketButton.addEventListener('click', this.openBasket); // Открытие корзины по клику
+		// }
 
 		// Подписываемся на событие изменения корзины
 		this.basketService.on('basketChanged', () => this.updateBasketView(true)); // Обновляем корзину с аргументом
@@ -49,25 +50,28 @@ export class BasketController implements IBasketController {
 
 	// Метод для открытия корзины
 	openBasket = (): void => {
-		const modalElement = document.getElementById('modal-container');
-		if (modalElement) {
-			const basketItems = this.basketService.getItems();
-			const totalPrice = this.basketService.getTotalPrice(); // Рассчитываем общую стоимость товаров
-			this.basketView.renderBasket(basketItems, totalPrice); // Передаем два аргумента: basketItems и totalPrice
-			// modalElement.querySelector('.modal__content')!.innerHTML = this.basketView.renderBasket(basketItems, totalPrice); // Передаем два аргумента: basketItems и totalPrice
-			modalElement.classList.add('modal_active'); // Активируем модальное окно корзины
 
-			// Привязываем событие для закрытия корзины
-			const closeModalButton = modalElement.querySelector('.modal__close');
-			if (closeModalButton) {
-				closeModalButton.addEventListener('click', () => {
-					modalElement.classList.remove('modal_active');
-				});
-			}
 
-			// Привязываем событие удаления товара при клике на кнопку удаления
-			this.bindDeleteEvents();
-		}
+		// const modalElement = document.getElementById('modal-container');
+		// if (modalElement) {
+		// 	const basketItems = this.basketService.getItems();
+		// 	const totalPrice = this.basketService.getTotalPrice(); // Рассчитываем общую стоимость товаров
+		// 	this.basketView.renderBasket(basketItems, totalPrice); // Передаем два аргумента: basketItems и totalPrice
+		// 	// modalElement.querySelector('.modal__content')!.innerHTML = this.basketView.renderBasket(basketItems, totalPrice); // Передаем два аргумента: basketItems и totalPrice
+		// 	modalElement.classList.add('modal_active'); // Активируем модальное окно корзины
+
+		// 	// Привязываем событие для закрытия корзины
+		// 	const closeModalButton = modalElement.querySelector('.modal__close');
+		// 	if (closeModalButton) {
+		// 		closeModalButton.addEventListener('click', () => {
+		// 			modalElement.classList.remove('modal_active');
+		// 		});
+		// 	}
+
+		// 	// Привязываем событие удаления товара при клике на кнопку удаления
+		// 	this.bindDeleteEvents();
+		// }
+
 	};
 
 	// Метод для добавления товара в корзину
