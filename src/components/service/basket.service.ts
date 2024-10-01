@@ -18,7 +18,7 @@ export interface IBasketService extends IEvents {
 	 * Получение списка товаров в корзине.
 	 * @returns Массив товаров с указанием их количества.
 	 */
-	getItems(): { product: IProduct, quantity: number }[];
+	getItems(): IProduct[];
 
 	/**
 	 * Получение общей суммы товаров в корзине.
@@ -33,7 +33,7 @@ export interface IBasketService extends IEvents {
 }
 
 export class BasketService extends EventEmitter implements IBasketService {
-	private items: { product: IProduct, quantity: number }[] = [];
+	private items:IProduct[] = [];
 
 	/**
 	 * Добавление товара в корзину.
@@ -41,15 +41,12 @@ export class BasketService extends EventEmitter implements IBasketService {
 	 * @param product - Товар для добавления в корзину.
 	 */
 	addProduct = (product: IProduct): void => {
-		const existingItem = this.items.find(item => item.product.id === product.id);
+		const existingItem = this.items.find(item => item.id === product.id);
 
-		if (existingItem) {
+		if (!existingItem) {
 			// Увеличиваем количество, если товар уже в корзине
-			existingItem.quantity += 1;
-		} else {
-			// Добавляем новый товар в корзину
-			this.items.push({ product, quantity: 1 });
-		}
+			this.items.push(product);
+		} 
 
 		this.emit('basketChanged', this.items); // Уведомляем о изменениях
 	};
@@ -60,28 +57,22 @@ export class BasketService extends EventEmitter implements IBasketService {
 	 * @param productId - Идентификатор товара для удаления.
 	 */
 	removeProduct = (productId: string): void => {
-		const itemIndex = this.items.findIndex(item => item.product.id === productId);
+		const itemIndex = this.items.findIndex(item => item.id === productId);
 
 		if (itemIndex !== -1) {
-			const item = this.items[itemIndex];
-
-			if (item.quantity > 1) {
-				// Если больше одного, уменьшаем количество
-				item.quantity -= 1;
-			} else {
 				// Иначе удаляем товар полностью
 				this.items.splice(itemIndex, 1);
 			}
 
 			this.emit('basketChanged', this.items); // Уведомляем о изменениях
 		}
-	};
+	
 
 	/**
 	 * Получение текущего списка товаров в корзине с их количеством.
 	 * @returns Массив объектов с товарами и количеством.
 	 */
-	getItems = (): { product: IProduct, quantity: number }[] => {
+	getItems = (): IProduct[] => {
 		return this.items;
 	};
 
@@ -91,7 +82,7 @@ export class BasketService extends EventEmitter implements IBasketService {
 	 */
 	getTotalPrice = (): number => {
 		return this.items.reduce((total, item) => {
-			return total + (item.product.price || 0) * item.quantity;
+			return total + (item.price || 0) ;
 		}, 0);
 	};
 

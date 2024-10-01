@@ -151,7 +151,7 @@ export class ProductView implements IProductView {
 
 			// Привязываем событие для закрытия модального окна
 			modalElement
-				.querySelector('.modal__close')!
+				.querySelector('.modal__close')
 				.addEventListener('click', () => {
 					modalElement.classList.remove('modal_active'); // Деактивируем модальное окно
 				});
