@@ -25,10 +25,11 @@ export interface IBasketView {
 
 	handleBasketButton(
 		getItems: CallableFunction,
-		getTotalPrice: CallableFunction
+		getTotalPrice: CallableFunction,
+		removeProduct: CallableFunction
 	): void;
 
-	openBasket(getItems: CallableFunction, getTotalPrice: CallableFunction): void;
+	openBasket(getItems: CallableFunction, getTotalPrice: CallableFunction,removeProduct:CallableFunction): void;
 	// updateBasketCounter(getItems:CallableFunction): void ;
 	updateBasketCounter(items: IProduct[]): void;
 	updateBasketView(
@@ -125,7 +126,8 @@ export class BasketView implements IBasketView {
 
 	openBasket = (
 		getItems: CallableFunction,
-		getTotalPrice: CallableFunction
+		getTotalPrice: CallableFunction,
+		removeProduct: CallableFunction
 	): void => {
 		const modalElement = document.getElementById('modal-container');
 		if (modalElement) {
@@ -139,16 +141,17 @@ export class BasketView implements IBasketView {
 					modalElement.classList.remove('modal_active'); // Деактивируем модальное окно
 				});
 		}
+		this.bindDeleteEvents(getItems(), getTotalPrice(), removeProduct);
 	};
 
 	handleBasketButton = (
 		getItems: CallableFunction,
-		getTotalPrice: CallableFunction
+		getTotalPrice: CallableFunction,removeProduct: CallableFunction
 	) => {
 		const basketButton = document.querySelector('.header__basket');
 		if (basketButton) {
 			basketButton.addEventListener('click', () => {
-				this.openBasket(getItems, getTotalPrice);
+				this.openBasket(getItems, getTotalPrice,removeProduct);
 			}); // Открытие корзины по клику
 		}
 	};
