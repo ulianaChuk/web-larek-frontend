@@ -2,11 +2,6 @@ import { IProduct } from '../model/product.model';
 import { CDN_URL } from '../../utils/constants';
 
 export interface IProductView {
-	/**
-	 * Рендеринг карточки товара.
-	 * @param product - Объект товара для рендеринга.
-	 * @returns HTML карточки товара.
-	 */
 	renderProductCard(product: IProduct): string;
 
 	renderAllCards(products: IProduct[]): void;
@@ -14,32 +9,9 @@ export interface IProductView {
 	bindProductEvents(products: IProduct[], addToBasket: CallableFunction): void;
 
 	showModal(product: IProduct, addToBasket: CallableFunction): void;
-	/**
-	 * Рендеринг модального окна с информацией о товаре.
-	 * @param product - Объект товара для отображения в модальном окне.
-	 * @returns HTML модального окна.
-	 */
+
 	renderModal(product: IProduct): string;
-
-	// /**
-	//  * Рендеринг товаров в корзине.
-	//  * @param items - Массив объектов товаров с их количеством.
-	//  * @returns HTML списка товаров в корзине.
-	//  */
-	// renderBasketItems(items: { product: IProduct; quantity: number }[]): string;
-
-	// /**
-	//  * Рендеринг пустой корзины.
-	//  * @returns HTML содержимого корзины.
-	//  */
-	// renderBasket(): string;
-
-	// /**
-	//  * Рендеринг сообщения об успешном оформлении заказа.
-	//  * @param totalPrice - Общая стоимость корзины.
-	//  * @returns HTML сообщения об успешном оформлении заказа.
-	//  */
-	// renderOrderSuccess(totalPrice: number): string;
+	switchDitalisClass(product: IProduct, cardCategory: HTMLElement): void;
 }
 
 export class ProductView implements IProductView {
@@ -70,7 +42,8 @@ export class ProductView implements IProductView {
 		cardPrice.textContent = `${product.price} синапсов`;
 		cardImage.src = `${CDN_URL}${product.image}`;
 		cardButton.dataset.id = product.id;
-
+		cardCategory.classList.remove('card__category_soft');
+		this.switchDitalisClass(product, cardCategory);
 		return cardButton.outerHTML;
 	};
 
@@ -110,6 +83,9 @@ export class ProductView implements IProductView {
 		modalPrice.textContent = `${product.price} синапсов`;
 		modalImage.src = `${CDN_URL}${product.image}`;
 		modalText.textContent = product.description || 'Нет описания';
+
+		modalCategory.classList.remove('card__category_other');
+		this.switchDitalisClass(product, modalCategory);
 
 		const modalContainer = fragment.querySelector('.card') as HTMLElement;
 		return modalContainer.outerHTML;
@@ -158,61 +134,32 @@ export class ProductView implements IProductView {
 		}
 	};
 
-	// Стрелочная функция для рендеринга товаров в корзине
-	renderBasketItems = (
-		items: { product: IProduct; quantity: number }[]
-	): string => {
-		return items
-			.map((item, index) => {
-				const template = document.getElementById(
-					'card-basket'
-				) as HTMLTemplateElement;
-				if (!template) {
-					console.error('Шаблон card-basket не найден');
-					return '';
-				}
-
-				const fragment = template.content.cloneNode(true) as DocumentFragment;
-
-				const basketTitle = fragment.querySelector(
-					'.card__title'
-				) as HTMLElement;
-				const basketPrice = fragment.querySelector(
-					'.card__price'
-				) as HTMLElement;
-				const basketIndex = fragment.querySelector(
-					'.basket__item-index'
-				) as HTMLElement;
-				const deleteButton = fragment.querySelector(
-					'.basket__item-delete'
-				) as HTMLElement;
-
-				basketTitle.textContent = item.product.title;
-				basketPrice.textContent =
-					item.product.price !== null
-						? `${item.product.price} синапсов x ${item.quantity}`
-						: 'Бесценно';
-				basketIndex.textContent = (index + 1).toString();
-				deleteButton.dataset.id = item.product.id;
-
-				const basketItem = fragment.querySelector(
-					'.basket__item'
-				) as HTMLElement;
-				return basketItem.outerHTML;
-			})
-			.join('');
+	switchDitalisClass = (product: IProduct, cardCategory: HTMLElement) => {
+		// const cardCategory = document.querySelector('.card__category') as HTMLElement;
+		switch (product.category) {
+			case 'софт-скил':
+				cardCategory.classList.add('card__category_soft');
+				break;
+			case 'дополнительное':
+				cardCategory.classList.add('ccard__category_additional');
+				break;
+			case 'кнопка':
+				cardCategory.classList.add('card__category_button');
+				break;
+			case 'хард-скил':
+				cardCategory.classList.add('card__category_hard');
+				break;
+			default:
+				cardCategory.classList.add('card__category_other');
+				break;
+		}
 	};
 
-	// // Стрелочная функция для рендеринга корзины
-	// renderBasket = (): string => {
-	// 	const template = document.getElementById('basket') as HTMLTemplateElement;
-	// 	if (!template) {
-	// 		console.error('Шаблон basket не найден');
-	// 		return '';
-	// 	}
-	// 	return template.innerHTML;
-	// };
-
+	blockButton(isAddProduct: boolean) {
+		if (isAddProduct) {
+			document.querySelector('.card__button').classList.add('button_disabled');
+		}
+	}
 	// // Стрелочная функция для рендеринга сообщения об успешном оформлении заказа
 	// renderOrderSuccess = (totalPrice: number): string => {
 	// 	const template = document.getElementById('success') as HTMLTemplateElement;
