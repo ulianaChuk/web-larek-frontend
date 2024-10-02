@@ -1,4 +1,6 @@
+import { BasketController } from '../controller/basket.controller';
 import { IProduct } from '../model/product.model';
+import { OrderView } from './order.view';
 
 export interface IBasketView {
 	/**
@@ -21,15 +23,19 @@ export interface IBasketView {
 	 * @param totalPrice - Общая сумма товаров в корзине.
 	 * @returns HTML корзины.
 	 */
-	renderBasket(items: IProduct[], totalPrice: number): void;
+	renderBasket(items: IProduct[], totalPrice: number,setProductsIdToOrder:CallableFunction): void;
 
 	handleBasketButton(
 		getItems: CallableFunction,
 		getTotalPrice: CallableFunction,
-		removeProduct: CallableFunction
+		removeProduct: CallableFunction,setProductsIdToOrder:CallableFunction
 	): void;
 
-	openBasket(getItems: CallableFunction, getTotalPrice: CallableFunction,removeProduct:CallableFunction): void;
+	openBasket(
+		getItems: CallableFunction,
+		getTotalPrice: CallableFunction,
+		removeProduct: CallableFunction,setProductsIdToOrder:CallableFunction
+	): void;
 	// updateBasketCounter(getItems:CallableFunction): void ;
 	updateBasketCounter(items: IProduct[]): void;
 	updateBasketView(
@@ -54,6 +60,9 @@ export interface IBasketView {
 
 export class BasketView implements IBasketView {
 	// Рендеринг товаров в корзине
+
+
+
 	renderBasketItems = (items: IProduct[]): string => {
 		return items
 			.map((item, index) => {
@@ -108,7 +117,7 @@ export class BasketView implements IBasketView {
 	};
 
 	// Рендеринг полной корзины с товарами и общей стоимостью
-	renderBasket = (items: IProduct[], totalPrice: number): void => {
+	renderBasket = (items: IProduct[], totalPrice: number,setProductsIdToOrder:CallableFunction): void => {
 		const template = document.getElementById('basket') as HTMLTemplateElement;
 		const fragment = template.content.cloneNode(true) as HTMLElement;
 		const basketItems = fragment.querySelector('.basket__list') as HTMLElement;
@@ -122,16 +131,36 @@ export class BasketView implements IBasketView {
 
 		modalContent.innerHTML = ``;
 		modalContent.appendChild(fragment);
+
+		// // ПОПРАВИТЬ!
+
+		const orderView = new OrderView();
+		const orderButton = document.querySelector('.basket__button');
+		if (orderButton) {
+			orderButton.addEventListener('click', () => {
+				orderView.openOrderModal();
+				console.log(orderButton);
+				console.log('click');
+				setProductsIdToOrder();
+				
+			});
+		}
 	};
+	// setProductsIdToOrder = (items: IProduct[])=>{
+	// 	const itemsId = items.map((item) => item.id);
+	// 	console.log(itemsId);
+	   
+	//    }
 
 	openBasket = (
 		getItems: CallableFunction,
 		getTotalPrice: CallableFunction,
-		removeProduct: CallableFunction
+		removeProduct: CallableFunction,
+		setProductsIdToOrder:CallableFunction
 	): void => {
 		const modalElement = document.getElementById('modal-container');
 		if (modalElement) {
-			this.renderBasket(getItems(), getTotalPrice());
+			this.renderBasket(getItems(), getTotalPrice(),setProductsIdToOrder);
 			modalElement.classList.add('modal_active');
 			// Привязываем событие для закрытия модального окна
 
@@ -146,12 +175,14 @@ export class BasketView implements IBasketView {
 
 	handleBasketButton = (
 		getItems: CallableFunction,
-		getTotalPrice: CallableFunction,removeProduct: CallableFunction
+		getTotalPrice: CallableFunction,
+		removeProduct: CallableFunction,
+		setProductsIdToOrder:CallableFunction
 	) => {
 		const basketButton = document.querySelector('.header__basket');
 		if (basketButton) {
 			basketButton.addEventListener('click', () => {
-				this.openBasket(getItems, getTotalPrice,removeProduct);
+				this.openBasket(getItems, getTotalPrice, removeProduct,setProductsIdToOrder);
 			}); // Открытие корзины по клику
 		}
 	};
@@ -228,8 +259,7 @@ export class BasketView implements IBasketView {
 
 		// Проверяем, если корзина пуста, обновляем представление
 		if (items.length === 0) {
-			this.updateBasketView(true, items, totalPrice,removeProduct); // Обновляем корзину для отображения пустого состояния
+			this.updateBasketView(true, items, totalPrice, removeProduct); // Обновляем корзину для отображения пустого состояния
 		}
 	};
-	
 }

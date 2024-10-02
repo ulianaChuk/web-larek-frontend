@@ -14,7 +14,6 @@ export interface IProductList {
 }
 
 export interface IOrder {
-	id: string;
 	items: Array<string>;
 	totalAmount: number;
 	payment: string;

@@ -3,31 +3,112 @@ export interface IOrderView {
     openOrder(): void;
 }
 export class OrderView  {
-renderOrder=()=>{
-    const template = document.getElementById('order')as HTMLTemplateElement;
-    if (!template) {
-        console.error('Шаблон order не найден');
-        return '';
+    private modalElement: HTMLElement | null;
+  
+    paymentMethodButton: HTMLButtonElement[];
+
+    constructor() {
+        this.modalElement = document.getElementById('modal-container')
+        this.paymentMethodButton = Array.from(this.modalElement.querySelectorAll('.button_alt')) as HTMLButtonElement[];
     }
-    const fragment = template.content.cloneNode(true) as DocumentFragment;
-    const modalContent = document.querySelector('.modal__content');
-    modalContent.innerHTML = '';
-    modalContent.appendChild(fragment);
 
-}
-openOrder = (): void => {
-    const modalElement = document.getElementById('modal-container');
-    if (modalElement) {
-       this.renderOrder
-        modalElement.classList.add('modal_active');
-        // Привязываем событие для закрытия модального окна
+    renderOrderForm = (): void => {
+        const template = document.getElementById('order') as HTMLTemplateElement;
+        if (!template) {
+            console.error('Шаблон order не найден');
+            return;
+        }
+        const fragment = template.content.cloneNode(true) as DocumentFragment;
+        const modalContent = this.modalElement?.querySelector('.modal__content');
+        if (modalContent) {
+            modalContent.innerHTML = '';
+            modalContent.appendChild(fragment);
+        }
 
-        modalElement
-            .querySelector('.modal__close')
-            .addEventListener('click', () => {
-                modalElement.classList.remove('modal_active'); // Деактивируем модальное окно
-            });
+    }; 
+    openOrderModal = (): void => {
+        if (this.modalElement) {
+            this.renderOrderForm();
+            this.modalElement.classList.add('modal_active');
+            this.bindOrderFormEvents();
+        }
+    };
+
+    closeOrderModal = (): void => {
+        if (this.modalElement) {
+            this.modalElement.classList.remove('modal_active');
+        }
+    };
+
+    selectPaymentMethod=()=>{
+        this.paymentMethodButton.forEach
     }
-}
+    // renderContactForm = (): void => {
+    //     const template = document.getElementById('contacts') as HTMLTemplateElement;
+    //     if (!template) {
+    //         console.error('Шаблон contacts не найден');
+    //         return;
+    //     }
+    //     const fragment = template.content.cloneNode(true) as DocumentFragment;
+    //     const modalContent = this.modalElement?.querySelector('.modal__content');
+    //     if (modalContent) {
+    //         modalContent.innerHTML = '';
+    //         modalContent.appendChild(fragment);
+    //     }
+    // };
 
-}
+    
+
+    bindOrderFormEvents = (): void => {
+        // const orderForm = this.modalElement?.querySelector('form[name="order"]');
+        // if (orderForm) {
+        //     orderForm.addEventListener('submit', (event) => {
+        //         event.preventDefault();
+        //         const addressInput = orderForm.querySelector('input[name="address"]') as HTMLInputElement;
+        //         if (!addressInput.value) {
+        //             this.showError('Введите адрес доставки');
+        //         } else {
+        //             this.currentStep = 2;
+        //             this.renderContactForm();
+        //             this.bindContactFormEvents();
+        //         }
+        //     });
+        }
+    };
+
+    // bindContactFormEvents = (): void => {
+    //     const contactForm = this.modalElement?.querySelector('form[name="contacts"]');
+    //     if (contactForm) {
+    //         contactForm.addEventListener('submit', (event) => {
+    //             event.preventDefault();
+    //             const emailInput = contactForm.querySelector('input[name="email"]') as HTMLInputElement;
+    //             const phoneInput = contactForm.querySelector('input[name="phone"]') as HTMLInputElement;
+    //             if (!emailInput.value || !phoneInput.value) {
+    //                 this.showError('Заполните все поля');
+    //             } else {
+    //                 this.showSuccess('Оплата прошла успешно');
+    //                 this.closeOrderModal();
+    //                 // Удаляем товары из корзины
+    //                 this.clearBasket();
+    //             }
+    //         });
+    //     }
+    // };
+
+    // showError = (message: string): void => {
+    //     const errorElement = this.modalElement?.querySelector('.form__errors');
+    //     if (errorElement) {
+    //         errorElement.textContent = message;
+    //     }
+    // };
+
+    // showSuccess = (message: string): void => {
+    //     alert(message);
+    // };
+
+    // clearBasket = (): void => {
+    //     // Здесь вызываем метод для очистки корзины
+    //     // basketController.clearBasket();
+    // };
+
+

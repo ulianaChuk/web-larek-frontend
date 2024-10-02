@@ -1,18 +1,11 @@
 import { IBasketService } from '../service/basket.service';
 import { IBasketView } from '../view/basket.view';
 import { IProduct } from '../model/product.model';
+import { IOrderView, OrderView } from '../view/order.view';
 
 export interface IBasketController {
-	/**
-	 * Добавляет товар в корзину.
-	 * @param product - Товар для добавления.
-	 */
+	
 	addToBasket(product: IProduct): void;
-
-
-	/**
-	 * Очищает корзину.
-	 */
 	clearBasket(): void;
 }
 
@@ -21,12 +14,14 @@ export class BasketController implements IBasketController {
 	private totalPrice: number;
 	constructor(
 		private basketService: IBasketService,
-		private basketView: IBasketView
+		private basketView: IBasketView,
+		// private orderView: IOrderView
 	) {
 		this.basketView.handleBasketButton(
 			this.basketService.getItems,
 			this.basketService.getTotalPrice,
-			this.basketService.removeProduct
+			this.basketService.removeProduct,
+			this.basketService.setProductsIdToOrder
 		); // Привязываем событие клика на кнопку корзины в шапке
 
 		this.items = this.basketService.getItems();
@@ -42,7 +37,23 @@ export class BasketController implements IBasketController {
 		); // Обновляем корзину с аргументом
 		this.basketService.on('basketChanged', () =>
 			this.basketView.updateBasketCounter(this.items)
-		); // Подписываемся на изменение корзины для обновления счетчика
+		); // Подписываемся на изменение корзины для обновления счетчика 
+		
+		
+		// ПОПРАВИТЬ!
+		
+		// const orderView = new OrderView();
+		// const modal = document.querySelector('.modal');
+		// const orderButton = modal.querySelector('.basket__button');
+		// console.log(orderButton);
+        // if (orderButton) {
+        //     orderButton.addEventListener('click', () => {
+        //         orderView.openOrderModal();
+        //         console.log(orderButton);
+        //         console.log('click');
+		// 		// this.setProductsIdToOrder();
+        //     });
+        // }
 	}
 
 	// Метод для добавления товара в корзину
@@ -70,4 +81,11 @@ export class BasketController implements IBasketController {
 			this.basketService.removeProduct
 		); // Очищаем отображение корзины в модальном окне
 	};
+
+// setProductsIdToOrder = ()=>{
+//  const itemsId = this.items.map((item) => item.id);
+//  console.log(itemsId);
+
+// }
+
 }

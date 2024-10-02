@@ -30,6 +30,7 @@ export interface IBasketService extends IEvents {
 	 * Очистка корзины.
 	 */
 	clearBasket(): void;
+	setProductsIdToOrder(items: IProduct[]): void;
 }
 
 export class BasketService extends EventEmitter implements IBasketService {
@@ -44,7 +45,6 @@ export class BasketService extends EventEmitter implements IBasketService {
 		const existingItem = this.items.find(item => item.id === product.id);
 
 		if (!existingItem) {
-			// Увеличиваем количество, если товар уже в корзине
 			this.items.push(product);
 		} 
 
@@ -93,4 +93,10 @@ export class BasketService extends EventEmitter implements IBasketService {
 		this.items = [];
 		this.emit('basketChanged', this.items); // Уведомляем о изменениях
 	};
+
+	setProductsIdToOrder = ()=>{
+		const itemsId = this.items.map((item) => item.id);
+		console.log(itemsId);
+	   
+	   }
 }
