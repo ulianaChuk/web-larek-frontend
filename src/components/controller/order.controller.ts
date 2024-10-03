@@ -7,19 +7,5 @@ export class OrderController {
         private basketController: BasketController
     ) {}
 
-    init = (): void => {
-
-        const orderButton = document.querySelector('.basket__button');
-        if (orderButton) {
-            orderButton.addEventListener('click', () => {
-                this.orderView.openOrderModal();
-                console.log(orderButton);
-                console.log('click');
-            });
-        }
-    };
-
-    clearBasket = (): void => {
-        this.basketController.clearBasket();
-    };
+    
 }

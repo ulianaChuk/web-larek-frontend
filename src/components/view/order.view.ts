@@ -1,3 +1,5 @@
+import { EventEmitter } from "../base/events";
+
 export interface IOrderView {
     renderOrder(): void;
     openOrder(): void;
@@ -7,9 +9,11 @@ export class OrderView  {
   
     paymentMethodButton: HTMLButtonElement[];
 
-    constructor() {
+    constructor(private events: EventEmitter) {
+        
         this.modalElement = document.getElementById('modal-container')
         this.paymentMethodButton = Array.from(this.modalElement.querySelectorAll('.button_alt')) as HTMLButtonElement[];
+        this.events.on('showOrder', this.openOrderModal);
     }
 
     renderOrderForm = (): void => {
@@ -24,6 +28,9 @@ export class OrderView  {
             modalContent.innerHTML = '';
             modalContent.appendChild(fragment);
         }
+        this.paymentMethodButton.forEach((button) => {
+            button.addEventListener('click', this.selectPaymentMethod);
+        })
 
     }; 
     openOrderModal = (): void => {
@@ -41,7 +48,7 @@ export class OrderView  {
     };
 
     selectPaymentMethod=()=>{
-        this.paymentMethodButton.forEach
+        // this.paymentMethodButton.forEach
     }
     // renderContactForm = (): void => {
     //     const template = document.getElementById('contacts') as HTMLTemplateElement;

@@ -4,7 +4,7 @@ import { IOrder } from "../../types";
 export class Order implements IOrder {
 	constructor(
 		public items: Array<string>,
-        public totalAmount: number,
+        public total: number,
         public  payment: string,
         public address: string,
         public email: string,
@@ -15,7 +15,7 @@ export class Order implements IOrder {
 	static fromBasket(data: IOrder): Order {
 		return new Order(
 			data.items,
-			data.totalAmount,
+			data.total,
 			data.payment,
 			data.address,
 			data.email,

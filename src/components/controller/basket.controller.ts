@@ -2,6 +2,7 @@ import { IBasketService } from '../service/basket.service';
 import { IBasketView } from '../view/basket.view';
 import { IProduct } from '../model/product.model';
 import { IOrderView, OrderView } from '../view/order.view';
+import { EventEmitter } from '../base/events';
 
 export interface IBasketController {
 	
@@ -15,19 +16,20 @@ export class BasketController implements IBasketController {
 	constructor(
 		private basketService: IBasketService,
 		private basketView: IBasketView,
+		private events: EventEmitter
 		// private orderView: IOrderView
 	) {
 		this.basketView.handleBasketButton(
 			this.basketService.getItems,
 			this.basketService.getTotalPrice,
 			this.basketService.removeProduct,
-			this.basketService.setProductsIdToOrder
+			
 		); // Привязываем событие клика на кнопку корзины в шапке
 
 		this.items = this.basketService.getItems();
 		this.totalPrice = this.basketService.getTotalPrice();
 		// Подписываемся на событие изменения корзины
-		this.basketService.on('basketChanged', () =>
+		this.events.on('basketChanged', () =>
 			this.basketView.updateBasketView(
 				true,
 				this.items,
@@ -35,7 +37,7 @@ export class BasketController implements IBasketController {
 				this.basketService.removeProduct
 			)
 		); // Обновляем корзину с аргументом
-		this.basketService.on('basketChanged', () =>
+		this.events.on('basketChanged', () =>
 			this.basketView.updateBasketCounter(this.items)
 		); // Подписываемся на изменение корзины для обновления счетчика 
 		

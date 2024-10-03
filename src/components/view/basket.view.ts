@@ -1,5 +1,7 @@
+import { EventEmitter, IEvents } from '../base/events';
 import { BasketController } from '../controller/basket.controller';
 import { IProduct } from '../model/product.model';
+// import { BaseView } from './base.view';
 import { OrderView } from './order.view';
 
 export interface IBasketView {
@@ -23,18 +25,18 @@ export interface IBasketView {
 	 * @param totalPrice - Общая сумма товаров в корзине.
 	 * @returns HTML корзины.
 	 */
-	renderBasket(items: IProduct[], totalPrice: number,setProductsIdToOrder:CallableFunction): void;
+	renderBasket(items: IProduct[], totalPrice: number): void;
 
 	handleBasketButton(
 		getItems: CallableFunction,
 		getTotalPrice: CallableFunction,
-		removeProduct: CallableFunction,setProductsIdToOrder:CallableFunction
+		removeProduct: CallableFunction
 	): void;
 
 	openBasket(
 		getItems: CallableFunction,
 		getTotalPrice: CallableFunction,
-		removeProduct: CallableFunction,setProductsIdToOrder:CallableFunction
+		removeProduct: CallableFunction
 	): void;
 	// updateBasketCounter(getItems:CallableFunction): void ;
 	updateBasketCounter(items: IProduct[]): void;
@@ -58,11 +60,14 @@ export interface IBasketView {
 	): void;
 }
 
-export class BasketView implements IBasketView {
+export class BasketView  implements IBasketView {
 	// Рендеринг товаров в корзине
+	events: IEvents;
 
-
-
+ constructor(events: IEvents) {
+		this.events = events;
+	}
+ 
 	renderBasketItems = (items: IProduct[]): string => {
 		return items
 			.map((item, index) => {
@@ -117,7 +122,7 @@ export class BasketView implements IBasketView {
 	};
 
 	// Рендеринг полной корзины с товарами и общей стоимостью
-	renderBasket = (items: IProduct[], totalPrice: number,setProductsIdToOrder:CallableFunction): void => {
+	renderBasket = (items: IProduct[], totalPrice: number): void => {
 		const template = document.getElementById('basket') as HTMLTemplateElement;
 		const fragment = template.content.cloneNode(true) as HTMLElement;
 		const basketItems = fragment.querySelector('.basket__list') as HTMLElement;
@@ -134,14 +139,16 @@ export class BasketView implements IBasketView {
 
 		// // ПОПРАВИТЬ!
 
-		const orderView = new OrderView();
+		// const orderView = new OrderView();
 		const orderButton = document.querySelector('.basket__button');
 		if (orderButton) {
 			orderButton.addEventListener('click', () => {
-				orderView.openOrderModal();
-				console.log(orderButton);
 				console.log('click');
-				setProductsIdToOrder();
+				this.events.emit('showOrder',{items,totalPrice});
+				// orderView.openOrderModal();
+				// console.log(orderButton);
+				// console.log('click');
+				// setProductsIdToOrder();
 				
 			});
 		}
@@ -156,11 +163,11 @@ export class BasketView implements IBasketView {
 		getItems: CallableFunction,
 		getTotalPrice: CallableFunction,
 		removeProduct: CallableFunction,
-		setProductsIdToOrder:CallableFunction
+		
 	): void => {
 		const modalElement = document.getElementById('modal-container');
 		if (modalElement) {
-			this.renderBasket(getItems(), getTotalPrice(),setProductsIdToOrder);
+			this.renderBasket(getItems(), getTotalPrice(),);
 			modalElement.classList.add('modal_active');
 			// Привязываем событие для закрытия модального окна
 
@@ -177,12 +184,12 @@ export class BasketView implements IBasketView {
 		getItems: CallableFunction,
 		getTotalPrice: CallableFunction,
 		removeProduct: CallableFunction,
-		setProductsIdToOrder:CallableFunction
+		
 	) => {
 		const basketButton = document.querySelector('.header__basket');
 		if (basketButton) {
 			basketButton.addEventListener('click', () => {
-				this.openBasket(getItems, getTotalPrice, removeProduct,setProductsIdToOrder);
+				this.openBasket(getItems, getTotalPrice, removeProduct);
 			}); // Открытие корзины по клику
 		}
 	};
