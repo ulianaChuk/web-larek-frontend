@@ -1,12 +1,16 @@
 
  export interface IProduct {
 	id: string;
-	name: string;
+	title: string;
 	price: number | null;
 	category: string;
 	description: string;
 	image: string;
 }
+export interface IActions {
+	click: (event: MouseEvent) => void;
+  }
+  
 
 export interface IProductList {
 	total: number;
