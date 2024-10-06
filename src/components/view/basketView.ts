@@ -15,19 +15,21 @@ export class BasketView {
 		this.basket = template.content
 			.querySelector('.basket')
 			.cloneNode(true) as HTMLElement;
-		// this.title = this.basket.querySelector('.modal__title');
 		this.basketList = this.basket.querySelector('.basket__list');
 		this.orderButton = this.basket.querySelector('.basket__button');
 		this.basketPrice = this.basket.querySelector('.basket__price');
 		this.basketButton = document.querySelector('.header__basket');
 		this.basketCounter = document.querySelector('.header__basket-counter');
 
-		this.orderButton.addEventListener('click', () => {
-			this.events.emit('order:open');
-		});
+
 		this.basketButton.addEventListener('click', () => {
 			this.events.emit('basket:open');
 		});
+		this.orderButton.addEventListener('click', () => {
+			this.events.emit('order:open');
+			// console.log('click');
+		});
+		
 
 		this.items = [];
 	}

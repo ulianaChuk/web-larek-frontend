@@ -45,4 +45,4 @@ total:number;
 }
 
 
-export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
+export type IFormErrors = Partial<Record<keyof IOrderForm, string>>;
