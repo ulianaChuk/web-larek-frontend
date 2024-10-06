@@ -48,7 +48,7 @@ yarn build
 
 Методы:
 - `getProductDetails(productId: string): IProduct` - Возвращает детали продукта по его идентификатору.
-<!-- - `setProductDetails(details: IProduct): void` -  Устанавливает или обновляет детали продукта. -->
+- `setProductDetails(details: IProduct): void` -  Устанавливает или обновляет детали продукта.
 
 ### Класс `BasketModel` хранит данные о карзине.
 
@@ -79,15 +79,14 @@ yarn build
 ### Класс `ProductView` отображает  информацию о продукте.
 
 Методы:
-<!-- - `renderProductDetails(product: IProduct): void` - рендерит детали продукта. -->
+- `renderProductDetails(product: IProduct): void` - рендерит детали продукта.
 - `renderGoodsCatalog(products: IProductList): void` - рендерит каталог с товаром.
 
 ### Класс `CartView` отображает корзину.
 
 Методы:
-- `renderCartItems(items: IBasketItem[]): void` - Рендерит товары в корзине.
-- `renderTotalPrice(total: number): void` - Рендерит общую сумму товаров в корзине.
-- `renderTotalAmount(items: IBasketItem[]): void` - Рендерит общее количество товаров в корзине.
+- `renderCartItems(items: ICartItem[]): void` - Рендерит товары в корзине.
+- `renderTotalAmount(total: number): void` - Рендерит общую сумму товаров в корзине.
 
 ### Класс `Modal` управляет отображением модальных окон.
 
