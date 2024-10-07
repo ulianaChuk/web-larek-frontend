@@ -11,7 +11,6 @@ import { IOrderForm, IProduct } from './types';
 import { API_URL, CDN_URL } from './utils/constants';
 import { BasketView } from './components/view/basketView';
 import { BasketModel } from './components/model/basketModel';
-import { BasketItem } from './components/view/basketItemsView';
 import { OrderView } from './components/view/orderView';
 import { OrderModel } from './components/model/orderModel';
 import { OrderContactsView } from './components/view/orderContacts';
@@ -24,9 +23,6 @@ const cardPreviewTemplate = document.getElementById(
 	'card-preview'
 ) as HTMLTemplateElement;
 const basketTemplate = document.getElementById('basket') as HTMLTemplateElement;
-const cardBasketTemplate = document.querySelector(
-	'#card-basket'
-) as HTMLTemplateElement;
 const orderTemplate = document.getElementById('order') as HTMLTemplateElement;
 const contactsTemplate = document.getElementById(
 	'contacts'
@@ -49,7 +45,7 @@ const modalView = new ModalView(modalContainer, events);
 const basketView = new BasketView(basketTemplate, events);
 const orderView = new OrderView(orderTemplate, events);
 const orderContactsView = new OrderContactsView(contactsTemplate, events);
-
+const success = new SuccessModalView(successTemplate, events);
 
 // Получаем данные с сервера и передаем их в модель
 apiModel
@@ -83,11 +79,11 @@ events.on('modalCard:open', (item: IProduct) => {
 	modalView.renderModal(cardPreview.renderCard(item));
 });
 
-
 // // Добавление товара в корзину
 
 events.on('product:add', () => {
 	basketModel.addProduct(productModel.product);
+	basketView.updateItems(basketModel.basketItems);
 	basketView.renderBusketCounter(basketModel.getCounter());
 	modalView.close();
 });
@@ -97,31 +93,20 @@ events.on('basket:basketItemRemove', (item: IProduct) => {
 	basketModel.removeProduct(item);
 	basketView.renderBusketCounter(basketModel.getCounter());
 	basketView.renderTotalPrice(basketModel.getTotalPrice());
-	basketView.items = basketModel.basketItems.map((item, index) =>
-		new BasketItem(cardBasketTemplate, events, {
-			click: () => events.emit('basket:basketItemRemove', item),
-		}).render(item, index + 1)
-	);
+	basketView.updateItems(basketModel.basketItems);
 });
 
 // Открыть корзину
 
 events.on('basket:open', () => {
 	basketView.renderTotalPrice(basketModel.getTotalPrice());
-
-	basketView.items = basketModel.basketItems.map((item, index) =>
-		new BasketItem(cardBasketTemplate, events, {
-			click: () => events.emit('basket:basketItemRemove', item),
-		}).render(item, index + 1)
-	);
-	
 	modalView.renderModal(basketView.render());
 });
 
 // открытие модального окна заказа
 events.on('order:open', () => {
 	modalView.renderModal(orderView.render());
-	orderModel.items = basketModel.basketItems.map((item) => item.id); 
+	orderModel.items = basketModel.basketItems.map((item) => item.id);
 	orderModel.total = basketModel.getTotalPrice();
 });
 
@@ -163,23 +148,20 @@ events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 		.join('; ');
 });
 
-
 //модальное окно Успех
 events.on('success:open', () => {
 	apiModel
 		.postOrderLot(orderModel.getOrderDetails())
 		.then((data) => {
 			console.log(data);
-			const success = new SuccessModalView(successTemplate, events);
-			basketModel.clearAllBasket();
 			basketView.renderBusketCounter(basketModel.getCounter());
 			modalView.renderModal(success.render(basketModel.getTotalPrice()));
+			basketModel.clearAllBasket();
 		})
 		.catch((error) => console.log(error));
 });
 //закрытие модального окна Успех
-events.on('success:close', () => modalView.close());
-
-
-
-// console.log(dataModel.productCards);
+events.on('successModal:close', () => {
+	modalView.close();
+	basketView.clear();
+});

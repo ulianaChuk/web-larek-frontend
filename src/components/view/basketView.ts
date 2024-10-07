@@ -1,4 +1,6 @@
+import { IProduct } from '../../types';
 import { IEvents } from '../base/events';
+import { BasketItem } from './basketItemsView';
 
 export class BasketView {
 	basket: HTMLElement;
@@ -24,7 +26,6 @@ export class BasketView {
 		});
 		this.orderButton.addEventListener('click', () => {
 			this.events.emit('order:open');
-			// console.log('click');
 		});
 
 		this.items = [];
@@ -35,6 +36,7 @@ export class BasketView {
 			this.basketList.replaceChildren(...items);
 			this.orderButton.removeAttribute('disabled');
 		} else {
+			this.basketList.textContent = '';
 			this.orderButton.setAttribute('disabled', 'disabled');
 		}
 	}
@@ -47,5 +49,22 @@ export class BasketView {
 	};
 	render = () => {
 		return this.basket;
+	};
+
+	updateItems = (basketItems: IProduct[]) => {
+		const cardBasketTemplate = document.querySelector(
+			'#card-basket'
+		) as HTMLTemplateElement;
+
+		this.items = basketItems.map((item, index) =>
+			new BasketItem(cardBasketTemplate, this.events, {
+				click: () => this.events.emit('basket:basketItemRemove', item),
+			}).render(item, index + 1)
+		);
+	};
+
+	clear = () => {
+		this.items = [];
+		this.renderBusketCounter(0);
 	};
 }

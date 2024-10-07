@@ -11,7 +11,7 @@ export class ModalView {
 		this.closeButton = container.querySelector('.modal__close');
 		this.content = container.querySelector('.modal__content');
 		this.wrapper = document.querySelector('.page__wrapper');
-		
+
 		this.container.addEventListener('click', this.handleClose);
 	}
 

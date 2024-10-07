@@ -6,10 +6,10 @@ export class BasketModel {
 	constructor() {
 		this.basketItems = [];
 	}
-	updateBasketProducts=(data: IProduct[]) => {
+	updateBasketProducts = (data: IProduct[]) => {
 		this.basketItems = data;
 		return this.basketItems;
-	}
+	};
 	getCounter = () => {
 		return this.basketItems.length;
 	};
@@ -22,11 +22,12 @@ export class BasketModel {
 		this.basketItems.push(product);
 	};
 	removeProduct = (product: IProduct) => {
-		const index = this.basketItems.indexOf(product);
-		if (index >= 0) {
-			this.basketItems.splice(index, 1);
-		}
+		const newBasketItems = this.basketItems.filter(
+			(item) => item.id !== product.id
+		);
+		this.basketItems = newBasketItems;
 	};
+
 	clearAllBasket = () => {
 		this.basketItems = [];
 	};

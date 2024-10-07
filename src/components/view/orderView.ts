@@ -1,4 +1,3 @@
-
 import { IEvents } from '../base/events';
 
 export class OrderView {
@@ -34,19 +33,21 @@ export class OrderView {
 			event.preventDefault();
 			this.events.emit('contacts:open');
 		});
-		
 	}
 
-    set handlePayment(paymentMethod: string) {
-        this.paymentButtons.forEach(button => {
-            button.classList.toggle('button_alt-active', button.name === paymentMethod);
-        })
-      }
+	set handlePayment(paymentMethod: string) {
+		this.paymentButtons.forEach((button) => {
+			button.classList.toggle(
+				'button_alt-active',
+				button.name === paymentMethod
+			);
+		});
+	}
 
 	set valid(value: boolean) {
 		this.submitButton.disabled = !value;
 	}
-	render=()=> {
+	render = () => {
 		return this.formOrder;
-	}
+	};
 }
