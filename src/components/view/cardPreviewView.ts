@@ -18,16 +18,16 @@ export class CardPreview extends CardView {
 			this.events.emit('product:add');
 		});
 	}
-	notForSale(data: IProduct): string {
+	notForSale = (data: IProduct): string => {
 		if (data.price) {
 			return 'Купить';
 		} else {
 			this.button.setAttribute('disabled', 'true');
 			return 'Не продается';
 		}
-	}
+	};
 
-	render(data: IProduct): HTMLElement {
+	render = (data: IProduct): HTMLElement => {
 		this.updateCardCategory(this.cardCategory, data.category);
 		this.cardTitle.textContent = data.title;
 		this.cardImage.src = data.image;
@@ -36,5 +36,5 @@ export class CardPreview extends CardView {
 		this.text.textContent = data.description;
 		this.button.textContent = this.notForSale(data);
 		return this.cardElement;
-	}
+	};
 }

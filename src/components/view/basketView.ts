@@ -1,6 +1,4 @@
-import { IEvents } from "../base/events";
-
-;
+import { IEvents } from '../base/events';
 
 export class BasketView {
 	basket: HTMLElement;
@@ -21,7 +19,6 @@ export class BasketView {
 		this.basketButton = document.querySelector('.header__basket');
 		this.basketCounter = document.querySelector('.header__basket-counter');
 
-
 		this.basketButton.addEventListener('click', () => {
 			this.events.emit('basket:open');
 		});
@@ -29,29 +26,26 @@ export class BasketView {
 			this.events.emit('order:open');
 			// console.log('click');
 		});
-		
 
 		this.items = [];
 	}
 
-
 	set items(items: HTMLElement[]) {
 		if (items.length) {
-		  this.basketList.replaceChildren(...items);
-		  this.orderButton.removeAttribute('disabled');
+			this.basketList.replaceChildren(...items);
+			this.orderButton.removeAttribute('disabled');
 		} else {
-		  this.orderButton.setAttribute('disabled', 'disabled');
+			this.orderButton.setAttribute('disabled', 'disabled');
 		}
-	  }
+	}
 
-	  renderBusketCounter =(value:number)=>{
+	renderBusketCounter = (value: number) => {
 		this.basketCounter.textContent = value.toString();
-	  }
-	  renderTotalPrice=(totalPrice:number)=>{
+	};
+	renderTotalPrice = (totalPrice: number) => {
 		this.basketPrice.textContent = `${totalPrice} синапсов`;
-	  }
-	  render=()=>{
-		return this.basket
-	  }
-
+	};
+	render = () => {
+		return this.basket;
+	};
 }

@@ -17,22 +17,22 @@ export class ModalView {
 	  this.modalContainer.querySelector('.modal__container').addEventListener('click', event => event.stopPropagation());
 	}
   
-	set content(value: HTMLElement) {
+	set content(value: HTMLElement){
 	  this._content.replaceChildren(value);
 	}
   
-	open() {
+	open=() =>{
 	  this.modalContainer.classList.add('modal_active');
 	  this.events.emit('modal:open');
 	}
   
-	close() {
+	close=() =>{
 	  this.modalContainer.classList.remove('modal_active');
 	  this.content = null; 
 	  this.events.emit('modal:close');
 	}
   
-	set locked(value: boolean) {
+	set locked(value: boolean){
 	  if (value) {
 		this._pageWrapper.classList.add('page__wrapper_locked');
 	  } else {
@@ -40,7 +40,7 @@ export class ModalView {
 	  }
 	}
   
-	render(): HTMLElement {
+	render=(): HTMLElement=> {
 	  this._content;
 	  this.open();
 	  return this.modalContainer

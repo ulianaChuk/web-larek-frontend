@@ -32,21 +32,21 @@ export class CardView {
 		}
 	}
 	
-	protected updateCardCategory(element: HTMLElement, value: string): void {
+	protected updateCardCategory = (element: HTMLElement, value: string): void  =>{
 		if (element) {
 			element.textContent = String(value);
 			element.className = `card__category card__category_${this.colors[value]}`;
 		}
 	}
 
-	protected setPrice(value: number | null): string {
+	protected setPrice = (value: number | null): string => {
 		if (value === null) {
 			return 'Бесценно';
 		}
 		return String(value) + ' синапсов';
 	}
 
-	render(data: IProduct): HTMLElement {
+	render=(data: IProduct): HTMLElement =>{
 		this.updateCardCategory(this.cardCategory, data.category);
 		this.cardTitle.textContent = data.title;
 		this.cardImage.src = data.image;

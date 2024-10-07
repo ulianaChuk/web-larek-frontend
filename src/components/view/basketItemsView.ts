@@ -26,11 +26,11 @@ export class BasketItem {
 		}
 	}
 
-	render(data: IProduct, item: number) {
+	render = (data: IProduct, item: number) => {
 		this.index.textContent = String(item);
 		this.title.textContent = data.title;
 		this.price.textContent =
 			data.price === null ? 'Бесценно' : `${data.price} синапсов`;
 		return this.basketItem;
-	}
+	};
 }

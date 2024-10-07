@@ -15,6 +15,7 @@ import { BasketItem } from './components/view/basketItemsView';
 import { OrderView } from './components/view/orderView';
 import { OrderModel } from './components/model/orderModel';
 import { OrderContactsView } from './components/view/orderContacts';
+import { SuccessModalView } from './components/view/successView';
 
 const cardCatalogTemplate = document.getElementById(
 	'card-catalog'
@@ -49,6 +50,15 @@ const basket = new BasketView(basketTemplate, events);
 const order = new OrderView(orderTemplate, events);
 const orderContacts = new OrderContactsView(contactsTemplate, events);
 
+
+// Получаем данные с сервера и передаем их в модель
+apiModel
+	.getListProductCard()
+	.then(function (data: IProduct[]) {
+		dataModel.productCards = data;
+	})
+	.catch((error) => console.log(error));
+
 // Отображения карточек товара на странице
 events.on('productCards:get', () => {
 	dataModel.productCards.forEach((item) => {
@@ -74,6 +84,7 @@ events.on('modalCard:open', (item: IProduct) => {
 	modal.render();
 });
 
+
 // // Добавление товара в корзину
 
 events.on('product:add', () => {
@@ -87,28 +98,23 @@ events.on('basket:basketItemRemove', (item: IProduct) => {
 	basketModel.removeProduct(item);
 	basket.renderBusketCounter(basketModel.getCounter());
 	basket.renderTotalPrice(basketModel.getTotalPrice());
-	let i = 0;
-	basket.items = basketModel.basketItems.map((item) => {
-		const basketItem = new BasketItem(cardBasketTemplate, events, {
+	basket.items = basketModel.basketItems.map((item, index) =>
+		new BasketItem(cardBasketTemplate, events, {
 			click: () => events.emit('basket:basketItemRemove', item),
-		});
-		i = i + 1;
-		return basketItem.render(item, i);
-	});
+		}).render(item, index + 1)
+	);
 });
 
 // Открыть корзину
 
 events.on('basket:open', () => {
 	basket.renderTotalPrice(basketModel.getTotalPrice());
-	let i = 0;
-	basket.items = basketModel.basketItems.map((item) => {
-		const basketItem = new BasketItem(cardBasketTemplate, events, {
+
+	basket.items = basketModel.basketItems.map((item, index) =>
+		new BasketItem(cardBasketTemplate, events, {
 			click: () => events.emit('basket:basketItemRemove', item),
-		});
-		i = i + 1;
-		return basketItem.render(item, i);
-	});
+		}).render(item, index + 1)
+	);
 	modal.content = basket.render();
 	modal.render();
 });
@@ -131,8 +137,6 @@ events.on(`order:changeAddress`, (data: { field: string; value: string }) => {
 	orderModel.setOrderAddress(data.field, data.value);
 });
 
-
-
 //валидация данных строки адресс и оплаты
 events.on('formErrors:address', (errors: Partial<IOrderForm>) => {
 	const { address, payment } = errors;
@@ -144,10 +148,10 @@ events.on('formErrors:address', (errors: Partial<IOrderForm>) => {
 
 //открытие формы с контактными данными
 events.on('contacts:open', () => {
-	// orderModel.total = basketModel.getTotalPrice();
 	modal.content = orderContacts.render();
 	modal.render();
 });
+
 //изменение данных в строке контактов
 events.on(`contacts:changeInput`, (data: { field: string; value: string }) => {
 	orderModel.setContactData(data.field, data.value);
@@ -161,13 +165,30 @@ events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 		.filter((i) => !!i)
 		.join('; ');
 });
+//модальное окно Успех
+events.on('success:open', () => {
+	apiModel
+		.postOrderLot(orderModel.getOrderLot())
+		.then((data) => {
+			console.log(data);
+			const success = new SuccessModalView(successTemplate, events);
+			modal.content = success.render(basketModel.getTotalPrice());
+			basketModel.clearAllBasket();
+			basket.renderBusketCounter(basketModel.getCounter());
+			modal.render();
+		})
+		.catch((error) => console.log(error));
+});
+//закрытие модального окна Успех
+events.on('success:close', () => modal.close());
 
-// Получаем данные с сервера и передаем их в модель
-apiModel
-	.getListProductCard()
-	.then(function (data: IProduct[]) {
-		dataModel.productCards = data;
-	})
-	.catch((error) => console.log(error));
+//блокирую прокрутку
+events.on('modal:open', () => {
+	modal.locked = true;
+});
+//разблокирую прокрутку
+events.on('modal:close', () => {
+	modal.locked = false;
+});
 
 // console.log(dataModel.productCards);

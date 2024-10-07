@@ -44,102 +44,95 @@ yarn build
 
 ## Описание классов Model, которые позволяют хранить и обрабатывать данные с сервера и от пользователей.
 
-### Класс `ProductModel` хранит данные о товаре.
+### Класс `ApiModel` предоставляет методы для взаимодействия с сервером.
 
 Методы:
-- `getProductDetails(productId: string): IProduct` - Возвращает детали продукта по его идентификатору.
-- `setProductDetails(details: IProduct): void` -  Устанавливает или обновляет детали продукта.
+- ` getListProductCard(): Promise<IProduct[]> ` - Получает массив объектов с данными о товарах.
+- `  postOrderLot(order: IOrder): Promise<IOrderResult> ` -  Отправляет заказ на сервер.
 
 ### Класс `BasketModel` хранит данные о карзине.
 
 Методы:
-- `getCounter(): number` - возвращает количество товаров в корзине.
-- `getSumAllProducts(): number` - считает сумму синапсов всех товаров в корзине.
-- `addProducts(item: ICartItem)` - добавляет товар в корзину.
-- `deleteProducts(productId: string): void` - удаляет товар из корзины.
-- `clearBasket(): void` - очищает/удаляет все товары из корзины.
+- `updateBasketProducts(data: IProduct[]): IProduct[]` - Обновляет корзину новыми данными.
+- `getCounter()` - Возвращает количество товаров в корзине.
+- `getTotalPrice()` - Возвращает общую стоимость всех товаров в корзине.
+- `addProduct(product: IProduct)` - Добавляет товар в корзину.
+- `removeProduct(product: IProduct)` - Удаляет товар из корзины.
+- `clearAllBasket()` - Очищает корзину.
 
-### Класс `FormModel` хранит данные, введенные пользователем в форму.
 
-Методы:
-- `setOrderAddress(address:string):void` - сохраняет адрес пользователя.
-- `setPaymentMethod(paymentMethod: string): void` - сохраняет способ оплаты
-- `setOrderData(data: IOrderForm): void` - сохраняет номер телефона/почту пользователя.
-- `validateFormData(data: IOrderForm): FormErrors` - проверяет номер телефона/почту пользователя.
-- `getOrderData():IOrderData` - возвращает объект данных пользователя с выбранными товарами.
-
-### Класс `OrderModel` хранит данные о заказе.
+### Класс `OrderModel` хранит данные, введенные пользователем в форму.
 
 Методы:
-- `getOrderDetails(orderId: string): Order` - Возвращает детали заказа по его идентификатору.
-- `setOrderDetails(details: IOrder): void` -  Устанавливает или обновляет детали заказа
+- `setOrderAddress(field: string, value: string)` - Сохраняет адрес пользователя.
+- `setContactData(field: string, value: string)` - Устанавливает контактные данные (email или телефон)
+- `validateOrder()` - Проверяет валидность адреса и способа оплаты.
+- `validateContacts()` - Проверяет валидность email и телефона.
+- `getOrderLot()` - Возвращает объект с данными заказа.
+
+
+### Класс `DataModel` хранит информацию о продуктах и позволяет устанавливать и получать эти данные.
+
+Методы:
+- `set productCards(data: IProduct[])` - Принимает массив продуктов и сохраняет .
+- `get productCards()` -  Возвращает текущий массив продуктов.
+- `setPreview(item: IProduct)` -  Выбирает продукт для открытия модального окна с детальной информацией.
 
 ## Классы View позволяют отображать элементы страницы с полученными данными, позволяют взаимодействовать с пользователем.
 
-### Класс `ProductView` отображает  информацию о продукте.
+### Класс `CardView` отвечает за отображение карточки продукта.
 
 Методы:
-- `renderProductDetails(product: IProduct): void` - рендерит детали продукта.
-- `renderGoodsCatalog(products: IProductList): void` - рендерит каталог с товаром.
+- `updateCardCategory(element: HTMLElement, value: string)` - Обновляет категорию карточки.
+- `setPrice(value: number | null)` - Устанавливает цену продукта.
+- `render(data: IProduct)` - Заполняет карточку данными продукта и возвращает элемент карточки.
 
-### Класс `CartView` отображает корзину.
-
-Методы:
-- `renderCartItems(items: ICartItem[]): void` - Рендерит товары в корзине.
-- `renderTotalAmount(total: number): void` - Рендерит общую сумму товаров в корзине.
-
-### Класс `Modal` управляет отображением модальных окон.
+### Класс `CardPreview` расширяет  класс `CardView` и отображает дополнительную информацию о товаре.
 
 Методы:
-- `open(): void` - отображает модальное окон.
-- `close(): void` - закрывает модальное окно.
+- `notForSale(data: IProduct)` - Проверяет, продается ли продук.
+- `render(data: IProduct)` - Заполняет карточку данными продукта и возвращает элемент карточки.
 
-### Класс `OrderFormView` отображает форму заказа.
+### Класс `ModalView` управляет отображением модальных окон.
 
 Методы:
-- `renderForm(data: IOrderForm): void` -  рендерит форму заказа.
-- `showValidationErrors(errors: FormErrors): void`- отображает ошибки валидации.
+- `set content(value: HTMLElement) ` - Метод для установки содержимого модального окна.
+- `	set locked(value: boolean)`-Метод для блокировки/разблокировки прокрутки страницы.
+- `open(): void` - Отображает модальное окон.
+- `close(): void` - Закрывает модальное окно.
+- `render(): void` - Рендерит модальное окно.
+
+
+### Класс `BasketView` отображение корзины.
+
+Методы:
+- `set items(items: HTMLElement[])` - Метод для установки списка товаров в корзине.
+- `renderBusketCounter(value: number)` - Метод для обновления счетчика товаров в корзине.
+- `renderTotalPrice(totalPrice: number)` - Метод для обновления общей стоимости товаров в корзине.
+- `render(): void` - Рендерит корзину.
+
+### Класс `BasketItem` отображает  отдельные элементы корзины.
+
+Методы:
+- `render(data: IProduct, item: number)` - Метод для рендеринга элемента корзины.
+
+### Класс `OrderView` отображает форму заказа.
+
+Методы:
+- `set handlePayment(paymentMethod: string)` -  Метод для установки выбранного способа оплаты.
+- `	set valid(value: boolean)`- Метод для установки состояния кнопки отправки формы.
+- `render()` - Метод для рендеринга формы заказа.
+
+### Класс `OrderContactsView` отображает модальное окно "Успех".
+
+Методы:
+- `set valid(value: boolean)` - Метод для установки состояния кнопки отправки формы.
+- `render()` - Метод для рендеринга формы контактов.
 
 ### Класс `SuccessModalView` отображает модальное окно "Успех".
 
 Методы:
-- `open(totalAmount: number): void` - отображает модальное окно.
-- `close(): void` - закрывает модальное окно.
-
-### Класс `ProductDetailsModalView` отображает модальное окно с деталями продукта.
-
-Методы:
-- `open(product: IProduct): void` - отображает модальное окно с деталями продукта.
-- `close(): void` - закрывает модальное окно.
+- `render(total: number)` - Метод для рендеринга модального окна успешного завершения заказа.
 
 
-### Класс `CatalogController` управляет взаимодействием между `CatalogView` и `ProductModel`.
 
-Методы:
-- `init(): void` - инициализирует контроллер каталога.
-- `handleProductClick(productId: string): void` - обрабатывает клик по товару, загружает и отображает его детали.
-
-### Класс `ProductController` управляет взаимодействием между `ProductView` и `ProductModel`.
-
-Методы:
-- `init(): void` - инициализирует контроллер продукта.
-- `handleAddToCart(productId: string): void` - обрабатывает добавление товара в корзину.
-
-### Класс `CartController` управляет взаимодействием между `CartView` и `CartModel`.
-
-Методы:
-- `init(): void` - инициализирует контроллер корзины.
-- `handleRemoveFromCart(productId: string): void` - обрабатывает удаление товара из корзины.
-- `handleClearCart(): void` - обрабатывает очистку корзины.
-
-### Класс `OrderController` управляет взаимодействием между `OrderView` и `OrderModel` .
-
-Методы:
-- `init(): void` - инициализирует контроллер заказа.
-- `handlePlaceOrder(order: IOrder): void` - обрабатывает размещение заказа.
-
-### Класс `FormController` управляет взаимодействием между `FormView` и `FormModel`.
-
-Методы:
-- `init(): void` - инициализирует контроллер формы.
-- `handleFormSubmit(data: IOrderForm): void` - обрабатывает отправку формы.
