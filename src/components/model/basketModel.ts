@@ -6,7 +6,7 @@ export class BasketModel {
 	constructor() {
 		this.basketItems = [];
 	}
-	updateBasketProducts=(data: IProduct[]): IProduct[]=> {
+	updateBasketProducts=(data: IProduct[]) => {
 		this.basketItems = data;
 		return this.basketItems;
 	}

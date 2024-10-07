@@ -1,4 +1,4 @@
-import { IFormErrors } from '../../types';
+import { IFormErrors, IOrder } from '../../types';
 import { IEvents } from '../base/events';
 
 export class OrderModel {
@@ -8,7 +8,7 @@ export class OrderModel {
 	address: string;
 	total: number;
 	items: string[];
-	formErrors: IFormErrors = {};
+	formValidationErrors: IFormErrors = {};
 
 	constructor(protected events: IEvents) {
 		this.payment = '';
@@ -19,64 +19,57 @@ export class OrderModel {
 		this.items = [];
 	}
 
-	setOrderAddress(field: string, value: string) {
+	setDeliveryAddress(field: string, adress: string) {
 		if (field === 'address') {
-			this.address = value;
+			this.address = adress;
 		}
 
-		if (this.validateOrder()) {
-			this.events.emit('order:ready', this.getOrderLot());
+		if (this.isOrderValid()) {
+			this.events.emit('order:ready', this.getOrderDetails());
 		}
 	}
-	validateOrder() {
+	isOrderValid() {
 		const regexp = /^[а-яА-Я0-9,.\s]+$/;
-		const errors: typeof this.formErrors = {};
+		const errors: typeof this.formValidationErrors = {};
 
-		if (!this.address) {
+		if (!regexp.test(this.address)) {
 			errors.address = 'Необходимо указать адрес';
-		} else if (!regexp.test(this.address)) {
-			errors.address = 'Укажите настоящий адрес';
 		} else if (!this.payment) {
 			errors.payment = 'Выберите способ оплаты';
 		}
 
-		this.formErrors = errors;
-		this.events.emit('formErrors:address', this.formErrors);
+		this.formValidationErrors = errors;
+		this.events.emit('formErrors:address', this.formValidationErrors);
 		return Object.keys(errors).length === 0;
 	}
-	setContactData(field: string, value: string) {
+	setContactData(field: string, contactsData: string) {
 		if (field === 'email') {
-			this.email = value;
+			this.email = contactsData;
 		} else if (field === 'phone') {
-			this.phone = value;
+			this.phone = contactsData;
 		}
 
-		if (this.validateContacts()) {
-			this.events.emit('order:ready', this.getOrderLot());
+		if (this.areContactsValid()) {
+			this.events.emit('order:ready', this.getOrderDetails());
 		}
 	}
-	validateContacts() {
+	areContactsValid() {
 		const regexpEmail = /[a-zA-Z0-9._-]+@[a-zA\-Z0-9._-]+\.[a-zA-Z0-9_-]+/;
 		const regexpPhone = /^((8|\+7)[- ]?)?(\(?\d{3}\)?[- ]?)?[\d\- ]{7,10}$/;
-		const errors: typeof this.formErrors = {};
+		const errors: typeof this.formValidationErrors = {};
 
-		if (!this.email) {
+		if (!regexpEmail.test(this.email)) {
 			errors.email = 'Необходимо указать email';
-		} else if (!regexpEmail.test(this.email)) {
-			errors.email = 'Некорректный адрес электронной почты';
 		}
-
-		if (!this.phone) {
+		if (!regexpPhone.test(this.phone)) {
 			errors.phone = 'Необходимо указать телефон';
-		} else if (!regexpPhone.test(this.phone)) {
-			errors.phone = 'Некорректный формат номера телефона';
 		}
-
-		this.formErrors = errors;
-		this.events.emit('formErrors:change', this.formErrors);
+		this.formValidationErrors = errors;
+		this.events.emit('formErrors:change', this.formValidationErrors);
 		return Object.keys(errors).length === 0;
 	}
-	getOrderLot() {
+
+	getOrderDetails(): IOrder {
 		return {
 			payment: this.payment,
 			email: this.email,

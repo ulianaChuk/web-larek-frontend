@@ -2,56 +2,72 @@ import { IActions, IProduct } from '../../types';
 import { IEvents } from '../base/events';
 
 export class CardView {
-	protected cardElement: HTMLElement;
-	protected cardCategory: HTMLElement;
-	protected cardTitle: HTMLElement;
-	protected cardImage: HTMLImageElement;
-	protected cardPrice: HTMLElement;
-	protected colors = <Record<string, string>>{
-		дополнительное: 'additional',
-		'софт-скил': 'soft',
-		кнопка: 'button',
-		'хард-скил': 'hard',
-		другое: 'other',
-	};
+	protected element: HTMLElement;
+	protected categoryElement: HTMLElement;
+	protected titleElement: HTMLElement;
+	protected imageElement: HTMLImageElement;
+	protected priceElement: HTMLElement;
+
 	constructor(
 		template: HTMLTemplateElement,
-		protected events: IEvents,
+		 events: IEvents,
 		actions?: IActions
 	) {
-		this.cardElement = template.content
+		this.element = template.content
 			.querySelector('.card')
 			.cloneNode(true) as HTMLElement;
-		this.cardCategory = this.cardElement.querySelector('.card__category');
-		this.cardTitle = this.cardElement.querySelector('.card__title');
-		this.cardImage = this.cardElement.querySelector('.card__image');
-		this.cardPrice = this.cardElement.querySelector('.card__price');
+		this.categoryElement = this.element.querySelector('.card__category');
+		this.titleElement = this.element.querySelector('.card__title');
+		this.imageElement = this.element.querySelector('.card__image');
+		this.priceElement = this.element.querySelector('.card__price');
 
 		if (actions?.click) {
-			this.cardElement.addEventListener('click', actions.click);
+			this.element.addEventListener('click', actions.click);
 		}
-	}
-	
-	protected updateCardCategory = (element: HTMLElement, value: string): void  =>{
-		if (element) {
-			element.textContent = String(value);
-			element.className = `card__category card__category_${this.colors[value]}`;
-		}
+		
 	}
 
-	protected setPrice = (value: number | null): string => {
-		if (value === null) {
+	updateCardCategory = (element: HTMLElement, category: string) => {
+		switch (category) {
+			case 'дополнительное':
+				element.textContent = category;
+				element.className = `card__category card__category_additional`;
+				break;
+			case 'софт-скил':
+				element.textContent = category;
+				element.className = `card__category card__category_soft`;
+				break;
+			case 'кнопка':
+				element.textContent = category;
+				element.className = `card__category card__category_button`;
+				break;
+			case 'хард-скил':
+				element.textContent = category;
+				element.className = `card__category card__category_hard`;
+				break;
+			case 'другое':
+				element.textContent = category;
+				element.className = `card__category card__category_other`;
+				break;
+		}
+		return element;
+	};
+
+	 setPrice = (price: number | null) => {
+		if (price === null) {
 			return 'Бесценно';
 		}
-		return String(value) + ' синапсов';
-	}
+		return price + ' синапсов';
+	};
 
-	render=(data: IProduct): HTMLElement =>{
-		this.updateCardCategory(this.cardCategory, data.category);
-		this.cardTitle.textContent = data.title;
-		this.cardImage.src = data.image;
-		this.cardImage.alt = this.cardTitle.textContent;
-		this.cardPrice.textContent = this.setPrice(data.price);
-		return this.cardElement;
-	}
+	renderCard = (product: IProduct) => {
+		this.categoryElement = this.updateCardCategory(
+			this.categoryElement,
+			product.category
+		);
+		this.titleElement.textContent = product.title;
+		this.imageElement.src = product.image;
+		this.priceElement.textContent = this.setPrice(product.price);
+		return this.element;
+	};
 }

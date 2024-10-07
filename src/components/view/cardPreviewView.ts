@@ -3,8 +3,8 @@ import { IEvents } from '../base/events';
 import { CardView } from './cardView';
 
 export class CardPreview extends CardView {
-	text: HTMLElement;
-	button: HTMLElement;
+	descriptionElement: HTMLElement;
+	addButton: HTMLElement;
 
 	constructor(
 		template: HTMLTemplateElement,
@@ -12,29 +12,30 @@ export class CardPreview extends CardView {
 		actions?: IActions
 	) {
 		super(template, events, actions);
-		this.text = this.cardElement.querySelector('.card__text');
-		this.button = this.cardElement.querySelector('.card__button');
-		this.button.addEventListener('click', () => {
+		this.descriptionElement = this.element.querySelector('.card__text');
+		this.addButton = this.element.querySelector('.card__button');
+		this.addButton.addEventListener('click', () => {
 			this.events.emit('product:add');
 		});
 	}
-	notForSale = (data: IProduct): string => {
-		if (data.price) {
-			return 'Купить';
-		} else {
-			this.button.setAttribute('disabled', 'true');
-			return 'Не продается';
+
+	notForSale = (product: IProduct) => {
+		if (!product.price) {
+			this.addButton.setAttribute('disabled', 'true');
 		}
+
 	};
 
-	render = (data: IProduct): HTMLElement => {
-		this.updateCardCategory(this.cardCategory, data.category);
-		this.cardTitle.textContent = data.title;
-		this.cardImage.src = data.image;
-		this.cardImage.alt = this.cardTitle.textContent;
-		this.cardPrice.textContent = this.setPrice(data.price);
-		this.text.textContent = data.description;
-		this.button.textContent = this.notForSale(data);
-		return this.cardElement;
+	renderCard = (product: IProduct): HTMLElement => {
+		this.categoryElement = this.updateCardCategory(
+			this.categoryElement,
+			product.category
+		);
+		this.titleElement.textContent = product.title;
+		this.imageElement.src = product.image;
+		this.priceElement.textContent = this.setPrice(product.price);
+		this.descriptionElement.textContent = product.description;
+		this.notForSale(product);
+		return this.element;
 	};
 }
