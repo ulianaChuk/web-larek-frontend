@@ -15,6 +15,7 @@ import { OrderView } from './components/view/orderView';
 import { OrderModel } from './components/model/orderModel';
 import { OrderContactsView } from './components/view/orderContacts';
 import { SuccessModalView } from './components/view/successView';
+import { BasketItem } from './components/view/basketItemsView';
 
 const cardCatalogTemplate = document.getElementById(
 	'card-catalog'
@@ -23,6 +24,10 @@ const cardPreviewTemplate = document.getElementById(
 	'card-preview'
 ) as HTMLTemplateElement;
 const basketTemplate = document.getElementById('basket') as HTMLTemplateElement;
+const cardBasketTemplate = document.querySelector(
+	'#card-basket'
+) as HTMLTemplateElement;
+
 const orderTemplate = document.getElementById('order') as HTMLTemplateElement;
 const contactsTemplate = document.getElementById(
 	'contacts'
@@ -79,24 +84,32 @@ events.on('modalCard:open', (item: IProduct) => {
 	modalView.renderModal(cardPreview.renderCard(item));
 });
 
+//изменение данных в корзине 
+
+events.on('basket:update', () => {
+
+	basketView.items = basketModel.basketItems.map((item, index) => 
+		new BasketItem(cardBasketTemplate, events, { 
+			click: () => events.emit('basket:basketItemRemove', item), 
+		}).render(item, index + 1) 
+	); 
+	basketView.renderBusketCounter(basketModel.getCounter());
+	basketView.renderTotalPrice(basketModel.getTotalPrice());
+
+});
 // // Добавление товара в корзину
 
 events.on('product:add', () => {
 	basketModel.addProduct(productModel.product);
-	
-	
-	
-	basketView.updateItems(basketModel.basketItems);
-	basketView.renderBusketCounter(basketModel.getCounter());
+		events.emit('basket:update', productModel.product);
 	modalView.close();
 });
 
 // // Удаление товара из корзины
 events.on('basket:basketItemRemove', (item: IProduct) => {
 	basketModel.removeProduct(item);
-	basketView.renderBusketCounter(basketModel.getCounter());
-	basketView.renderTotalPrice(basketModel.getTotalPrice());
-	basketView.updateItems(basketModel.basketItems);
+		events.emit('basket:update', productModel.product);
+	
 });
 
 // Открыть корзину
@@ -160,11 +173,12 @@ events.on('success:open', () => {
 			basketView.renderBusketCounter(basketModel.getCounter());
 			modalView.renderModal(success.render(basketModel.getTotalPrice()));
 			basketModel.clearAllBasket();
+			basketView.clear();
 		})
 		.catch((error) => console.log(error));
 });
 //закрытие модального окна Успех
 events.on('successModal:close', () => {
 	modalView.close();
-	basketView.clear();
+	
 });

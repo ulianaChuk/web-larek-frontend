@@ -33,7 +33,6 @@ export class BasketView {
 
 	set items(items: HTMLElement[]) {
 
-		
 		if (items.length) {
 			this.basketList.replaceChildren(...items);
 			this.orderButton.removeAttribute('disabled');
@@ -41,7 +40,6 @@ export class BasketView {
 			this.basketList.textContent = '';
 			this.orderButton.setAttribute('disabled', 'disabled');
 		}
-		
 
 	}
 

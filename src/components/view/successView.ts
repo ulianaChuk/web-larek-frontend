@@ -12,11 +12,13 @@ export class SuccessModalView{
       this.handleCkickClose();
     }
   
+
     handleCkickClose = () => {
       this.orderButton.addEventListener('click', () => { 
         console.log('close')
         this.events.emit('successModal:close') })
     }
+    
     render=(totalPrice: number)=> {
       this.text.textContent = String(`Списано ${totalPrice} синапсов`);
       return this.success
