@@ -3,7 +3,7 @@ import { IEvents } from '../base/events';
 
 export class BasketItem {
 	basketItem: HTMLElement;
-	index: HTMLElement;
+	_index: HTMLElement;
 	title: HTMLElement;
 	price: HTMLElement;
 	buttonDelete: HTMLButtonElement;
@@ -16,7 +16,7 @@ export class BasketItem {
 		this.basketItem = template.content
 			.querySelector('.basket__item')
 			.cloneNode(true) as HTMLElement;
-		this.index = this.basketItem.querySelector('.basket__item-index');
+		this._index = this.basketItem.querySelector('.basket__item-index');
 		this.title = this.basketItem.querySelector('.card__title');
 		this.price = this.basketItem.querySelector('.card__price');
 		this.buttonDelete = this.basketItem.querySelector('.basket__item-delete');
@@ -25,9 +25,19 @@ export class BasketItem {
 			this.buttonDelete.addEventListener('click', actions.click);
 		}
 	}
+	// set items (items: HTMLElement[]) {
+	// 	items = items.map((item, index)=> {
+	// 		item.querySelector('.basket__item-index').textContent = String(index + 1);
+	// 		return item;
+	// 	}
+	// 	);
+	// }
+
+
 
 	render = (data: IProduct, item: number) => {
-		this.index.textContent = String(item);
+		// this.index.textContent = String(item);
+		this._index.textContent = String(item);
 		this.title.textContent = data.title;
 		this.price.textContent =
 			data.price === null ? 'Бесценно' : `${data.price} синапсов`;

@@ -83,6 +83,9 @@ events.on('modalCard:open', (item: IProduct) => {
 
 events.on('product:add', () => {
 	basketModel.addProduct(productModel.product);
+	
+	
+	
 	basketView.updateItems(basketModel.basketItems);
 	basketView.renderBusketCounter(basketModel.getCounter());
 	modalView.close();

@@ -22,10 +22,10 @@ export class BasketModel {
 		this.basketItems.push(product);
 	};
 	removeProduct = (product: IProduct) => {
-		const newBasketItems = this.basketItems.filter(
-			(item) => item.id !== product.id
-		);
-		this.basketItems = newBasketItems;
+		const index = this.basketItems.indexOf(product); 
+		if (index >= 0) { 
+			this.basketItems.splice(index, 1); 
+		}
 	};
 
 	clearAllBasket = () => {
